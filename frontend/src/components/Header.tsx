@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import {
   Dialog,
   DialogPanel,
@@ -16,6 +16,9 @@ import LogoutPopup from './Popups/Logout'
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [showLogoutPopup, setShowLogoutPopup] = useState(false)
+  const location = useLocation()
+
+  const isActive = (path: string) => location.pathname === path
 
   const handleLogout = () => {
     setShowLogoutPopup(false)
@@ -53,15 +56,36 @@ export default function Header() {
           </button>
         </div>
         <div className="hidden lg:flex lg:gap-x-12">
-          <Link to="/dashboard" className="text-sm/6 font-semibold text-gray-900">
+          <Link
+            to="/dashboard"
+            className={`text-sm/6 font-semibold px-3 py-1.5 rounded-lg transition-colors ${
+              isActive('/dashboard')
+                ? 'bg-amber-100 text-amber-700'
+                : 'text-gray-900 hover:bg-gray-100'
+            }`}
+          >
             Dashboard
           </Link>
-          <Link to="/list-notes" className="text-sm/6 font-semibold text-gray-900">
+          <Link
+            to="/list-notes"
+            className={`text-sm/6 font-semibold px-3 py-1.5 rounded-lg transition-colors ${
+              isActive('/list-notes')
+                ? 'bg-amber-100 text-amber-700'
+                : 'text-gray-900 hover:bg-gray-100'
+            }`}
+          >
             List notes
           </Link>
-          <a href="#" className="text-sm/6 font-semibold text-gray-900">
+          <Link
+            to="/my-notes"
+            className={`text-sm/6 font-semibold px-3 py-1.5 rounded-lg transition-colors ${
+              isActive('/my-notes')
+                ? 'bg-amber-100 text-amber-700'
+                : 'text-gray-900 hover:bg-gray-100'
+            }`}
+          >
             My notes
-          </a>
+          </Link>
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-x-6">
           <Link to="/login" className="text-sm/6 font-semibold text-gray-900">
@@ -104,22 +128,34 @@ export default function Header() {
               <div className="space-y-2 py-6">
                 <Link
                   to="/dashboard"
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
+                  className={`-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold ${
+                    isActive('/dashboard')
+                      ? 'bg-amber-100 text-amber-700'
+                      : 'text-gray-900 hover:bg-gray-50'
+                  }`}
                 >
                   Dashboard
                 </Link>
                 <Link
                   to="/list-notes"
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
+                  className={`-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold ${
+                    isActive('/list-notes')
+                      ? 'bg-amber-100 text-amber-700'
+                      : 'text-gray-900 hover:bg-gray-50'
+                  }`}
                 >
                   List notes
                 </Link>
-                <a
-                  href="#"
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
+                <Link
+                  to="/my-notes"
+                  className={`-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold ${
+                    isActive('/my-notes')
+                      ? 'bg-amber-100 text-amber-700'
+                      : 'text-gray-900 hover:bg-gray-50'
+                  }`}
                 >
                   My notes
-                </a>
+                </Link>
               </div>
               <div className="py-6 space-y-2">
                 <Link

@@ -1,8 +1,13 @@
+'use client'
+
+import { useState } from 'react'
 import Header from '../components/Header'
 import CreateNewNote from '../components/Notes/CreateNewNote'
 import NoteItem from '../components/Notes/NoteItem'
+import DeletePopup from '../components/Popups/Delete'
+import EditNotePopup from '../components/Popups/EditNote'
 
-const sampleNotes = [
+const initialNotes = [
   {
     id: 1,
     content: 'Remember to finish the quarterly report by Friday. Need to include sales data and customer feedback analysis.',
@@ -41,40 +46,81 @@ const sampleNotes = [
 ]
 
 export default function Dashboard() {
+  const [notes, setNotes] = useState(initialNotes)
+  const [showDeletePopup, setShowDeletePopup] = useState(false)
+  const [showEditPopup, setShowEditPopup] = useState(false)
+  const [selectedNoteId, setSelectedNoteId] = useState<number | null>(null)
+  const [selectedNoteContent, setSelectedNoteContent] = useState('')
+
   const handleModify = (id: number) => {
-    console.log('Modify note:', id)
+    const note = notes.find((n) => n.id === id)
+    if (note) {
+      setSelectedNoteId(id)
+      setSelectedNoteContent(note.content)
+      setShowEditPopup(true)
+    }
+  }
+
+  const handleEditConfirm = (newContent: string) => {
+    setNotes((prevNotes) =>
+      prevNotes.map((note) =>
+        note.id === selectedNoteId ? { ...note, content: newContent } : note
+      )
+    )
+    setShowEditPopup(false)
+    setSelectedNoteId(null)
+    setSelectedNoteContent('')
   }
 
   const handleDelete = (id: number) => {
-    console.log('Delete note:', id)
+    setSelectedNoteId(id)
+    setShowDeletePopup(true)
+  }
+
+  const handleDeleteConfirm = () => {
+    setNotes((prevNotes) => prevNotes.filter((note) => note.id !== selectedNoteId))
+    setShowDeletePopup(false)
+    setSelectedNoteId(null)
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <Header />
-      <main className="mx-auto max-w-7xl px-6 py-8 lg:px-8">
-        <h1 className="text-2xl font-bold text-gray-900">Welcome to your notes dashboard.</h1>
-        
-        <div className="mt-8">
-          <CreateNewNote />
-        </div>
+    <>
+      <DeletePopup
+        open={showDeletePopup}
+        onClose={() => setShowDeletePopup(false)}
+        onConfirm={handleDeleteConfirm}
+      />
+      <EditNotePopup
+        open={showEditPopup}
+        onClose={() => setShowEditPopup(false)}
+        onConfirm={handleEditConfirm}
+        initialContent={selectedNoteContent}
+      />
+      <div className="min-h-screen bg-white">
+        <Header />
+        <main className="mx-auto max-w-7xl px-6 py-8 lg:px-8">
+          <h1 className="text-2xl font-bold text-gray-900">Welcome to your notes dashboard.</h1>
+          
+          <div className="mt-8">
+            <CreateNewNote />
+          </div>
 
-        <div className="mt-8 space-y-4">
-          {sampleNotes.map((note) => (
-            <NoteItem
-              key={note.id}
-              id={note.id}
-              content={note.content}
-              author={note.author}
-              avatar={note.avatar}
-              createdAt={note.createdAt}
-              onModify={handleModify}
-              onDelete={handleDelete}
-            />
-          ))}
-        </div>
-      </main>
-    </div>
+          <div className="mt-8 space-y-4">
+            {notes.map((note) => (
+              <NoteItem
+                key={note.id}
+                id={note.id}
+                content={note.content}
+                author={note.author}
+                avatar={note.avatar}
+                createdAt={note.createdAt}
+                onModify={handleModify}
+                onDelete={handleDelete}
+              />
+            ))}
+          </div>
+        </main>
+      </div>
+    </>
   )
 }
-

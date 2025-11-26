@@ -1,23 +1,34 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
-import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
+import { PencilSquareIcon } from '@heroicons/react/24/outline'
 
-interface DeletePopupProps {
+interface EditNotePopupProps {
   open: boolean
   onClose: () => void
-  onConfirm: () => void
-  title?: string
-  message?: string
+  onConfirm: (content: string) => void
+  initialContent?: string
 }
 
-export default function DeletePopup({
+export default function EditNotePopup({
   open,
   onClose,
   onConfirm,
-  title = 'Delete note',
-  message = 'Are you sure you want to delete this note? This action cannot be undone.',
-}: DeletePopupProps) {
+  initialContent = '',
+}: EditNotePopupProps) {
+  const [content, setContent] = useState(initialContent)
+
+  useEffect(() => {
+    setContent(initialContent)
+  }, [initialContent])
+
+  const handleSubmit = () => {
+    if (content.trim()) {
+      onConfirm(content)
+    }
+  }
+
   return (
     <Dialog open={open} onClose={onClose} className="relative z-10">
       <DialogBackdrop
@@ -33,17 +44,21 @@ export default function DeletePopup({
           >
             <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
               <div className="sm:flex sm:items-start">
-                <div className="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:size-10">
-                  <ExclamationTriangleIcon aria-hidden="true" className="size-6 text-red-600" />
+                <div className="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-amber-100 sm:mx-0 sm:size-10">
+                  <PencilSquareIcon aria-hidden="true" className="size-6 text-amber-600" />
                 </div>
-                <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                   <DialogTitle as="h3" className="text-base font-semibold text-gray-900">
-                    {title}
+                    Edit note
                   </DialogTitle>
-                  <div className="mt-2">
-                    <p className="text-sm text-gray-500">
-                      {message}
-                    </p>
+                  <div className="mt-4">
+                    <textarea
+                      value={content}
+                      onChange={(e) => setContent(e.target.value)}
+                      rows={5}
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none"
+                      placeholder="Enter your note..."
+                    />
                   </div>
                 </div>
               </div>
@@ -51,10 +66,11 @@ export default function DeletePopup({
             <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
               <button
                 type="button"
-                onClick={onConfirm}
-                className="inline-flex w-full justify-center rounded-xl bg-red-600 px-6 py-2 text-sm font-semibold text-white hover:bg-red-500 sm:ml-3 sm:w-32 cursor-pointer"
+                onClick={handleSubmit}
+                disabled={!content.trim()}
+                className="inline-flex w-full justify-center rounded-xl bg-amber-500 px-6 py-2 text-sm font-semibold text-white hover:bg-amber-400 sm:ml-3 sm:w-32 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
-                Delete
+                Save
               </button>
               <button
                 type="button"
