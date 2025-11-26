@@ -6,6 +6,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import ListNotes from "./pages/ListNotes";
 import MyNotes from "./pages/Mynotes";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/list-notes" element={<ListNotes />} />
         <Route path="/my-notes" element={<MyNotes />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </BrowserRouter>
   );
