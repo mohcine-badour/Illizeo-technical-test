@@ -2,9 +2,10 @@
 
 import { useState } from 'react'
 import Header from '../../components/Home/Header'
-import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
+import { PencilSquareIcon, TrashIcon, PlusIcon } from '@heroicons/react/24/outline'
 import DeletePopup from '../../components/Popups/Delete'
 import EditNotePopup from '../../components/Popups/EditNote'
+import AddNotePopup from '../../components/Popups/AddNote'
 
 const allNotes = [
   {
@@ -74,6 +75,7 @@ export default function MyNotes() {
   const myNotes = allNotes.filter((note) => note.author === currentUser)
   const [showDeletePopup, setShowDeletePopup] = useState(false)
   const [showEditPopup, setShowEditPopup] = useState(false)
+  const [showAddPopup, setShowAddPopup] = useState(false)
   const [selectedNoteId, setSelectedNoteId] = useState<number | null>(null)
   const [selectedNoteContent, setSelectedNoteContent] = useState('')
 
@@ -101,6 +103,11 @@ export default function MyNotes() {
     setSelectedNoteContent('')
   }
 
+  const handleAddConfirm = (content: string) => {
+    console.log('Add new note:', content)
+    setShowAddPopup(false)
+  }
+
   return (
     <>
       <DeletePopup
@@ -114,11 +121,27 @@ export default function MyNotes() {
         onConfirm={handleEditConfirm}
         initialContent={selectedNoteContent}
       />
+      <AddNotePopup
+        open={showAddPopup}
+        onClose={() => setShowAddPopup(false)}
+        onConfirm={handleAddConfirm}
+      />
       <div className="min-h-screen bg-white">
         <Header />
         <main className="mx-auto max-w-7xl px-6 py-8 lg:px-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">My Notes</h1>
-          <p className="text-gray-500 mb-6">You have {myNotes.length} notes</p>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">My Notes</h1>
+              <p className="text-gray-500 mt-1">You have {myNotes.length} notes</p>
+            </div>
+            <button
+              onClick={() => setShowAddPopup(true)}
+              className="inline-flex items-center gap-2 rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-400 transition-colors cursor-pointer"
+            >
+              <PlusIcon className="size-5" />
+              Add new note
+            </button>
+          </div>
           <ul role="list" className="divide-y divide-gray-100">
             {myNotes.map((note) => (
               <li

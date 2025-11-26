@@ -1,5 +1,5 @@
 import Header from './Header'
-import bgSection from '../assets/images/bg-section.jpg'
+import bgSection from '../../assets/images/bg-section.jpg'
 
 const links = [
   { name: 'Create notes', href: '#' },
