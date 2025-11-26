@@ -1,24 +1,32 @@
 'use client'
 
 import { useState } from 'react'
+import { useFormik } from 'formik'
 import { Label, Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react'
 import { ChevronUpDownIcon } from '@heroicons/react/16/solid'
 import { CheckIcon } from '@heroicons/react/20/solid'
 import postItLogo from '../../assets/images/post-it.png'
-
-const companies = [
-  { id: 1, name: 'TechNova Solutions' },
-  { id: 2, name: 'BlueSky Industries' },
-  { id: 3, name: 'Quantum Dynamics' },
-  { id: 4, name: 'GreenLeaf Corp' },
-  { id: 5, name: 'Stellar Innovations' },
-  { id: 6, name: 'NexGen Systems' },
-  { id: 7, name: 'CloudPeak Technologies' },
-  { id: 8, name: 'Horizon Enterprises' },
-]
+import {
+  loginValidationSchema,
+  loginInitialValues,
+  getInputClassName,
+  companies,
+} from '../../utils/formHelpers'
 
 export default function Login() {
   const [selected, setSelected] = useState(companies[0])
+
+  const formik = useFormik({
+    initialValues: loginInitialValues,
+    validationSchema: loginValidationSchema,
+    onSubmit: (values) => {
+      console.log('Login submitted:', {
+        ...values,
+        company: selected,
+      })
+      // Add your login logic here
+    },
+  })
 
   return (
     <>
@@ -35,7 +43,7 @@ export default function Login() {
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form action="#" method="POST" className="space-y-6">
+          <form onSubmit={formik.handleSubmit} className="space-y-6">
             <Listbox value={selected} onChange={setSelected}>
               <Label className="block text-sm/6 font-medium text-gray-900">Select your company</Label>
               <div className="relative mt-2">
@@ -79,10 +87,15 @@ export default function Login() {
                   id="email"
                   name="email"
                   type="email"
-                  required
                   autoComplete="email"
-                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-amber-600 sm:text-sm/6"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.email}
+                  className={getInputClassName(formik.touched.email, formik.errors.email)}
                 />
+                {formik.touched.email && formik.errors.email && (
+                  <p className="mt-1 text-sm text-red-500">{formik.errors.email}</p>
+                )}
               </div>
             </div>
 
@@ -97,17 +110,23 @@ export default function Login() {
                   id="password"
                   name="password"
                   type="password"
-                  required
                   autoComplete="current-password"
-                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-amber-600 sm:text-sm/6"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.password}
+                  className={getInputClassName(formik.touched.password, formik.errors.password)}
                 />
+                {formik.touched.password && formik.errors.password && (
+                  <p className="mt-1 text-sm text-red-500">{formik.errors.password}</p>
+                )}
               </div>
             </div>
 
             <div>
               <button
                 type="submit"
-                className="flex w-full justify-center rounded-md bg-amber-500 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-amber-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500"
+                disabled={formik.isSubmitting}
+                className="flex w-full justify-center rounded-md bg-amber-500 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-amber-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 Sign in
               </button>

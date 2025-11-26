@@ -1,25 +1,34 @@
 'use client'
 
 import { useState } from 'react'
+import { useFormik } from 'formik'
 import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react'
 import { ChevronUpDownIcon } from '@heroicons/react/16/solid'
 import { CheckIcon } from '@heroicons/react/20/solid'
 import postItLogo from '../../assets/images/post-it.png'
-
-const companies = [
-  { id: 1, name: 'TechNova Solutions' },
-  { id: 2, name: 'BlueSky Industries' },
-  { id: 3, name: 'Quantum Dynamics' },
-  { id: 4, name: 'GreenLeaf Corp' },
-  { id: 5, name: 'Stellar Innovations' },
-  { id: 6, name: 'NexGen Systems' },
-  { id: 7, name: 'CloudPeak Technologies' },
-  { id: 8, name: 'Horizon Enterprises' },
-]
+import {
+  getRegisterValidationSchema,
+  registerInitialValues,
+  getInputClassName,
+  companies,
+} from '../../utils/formHelpers'
 
 export default function Register() {
   const [selected, setSelected] = useState(companies[0])
   const [useSubdomain, setUseSubdomain] = useState(false)
+
+  const formik = useFormik({
+    initialValues: registerInitialValues,
+    validationSchema: getRegisterValidationSchema(useSubdomain),
+    enableReinitialize: true,
+    onSubmit: (values) => {
+      console.log('Register submitted:', {
+        ...values,
+        company: useSubdomain ? values.subdomain : selected,
+      })
+      // Add your registration logic here
+    },
+  })
 
   return (
     <>
@@ -36,7 +45,7 @@ export default function Register() {
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form action="#" method="POST" className="space-y-6">
+          <form onSubmit={formik.handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="name" className="block text-sm/6 font-medium text-gray-900">
                 Full name
@@ -46,10 +55,15 @@ export default function Register() {
                   id="name"
                   name="name"
                   type="text"
-                  required
                   autoComplete="name"
-                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-amber-600 sm:text-sm/6"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.name}
+                  className={getInputClassName(formik.touched.name, formik.errors.name)}
                 />
+                {formik.touched.name && formik.errors.name && (
+                  <p className="mt-1 text-sm text-red-500">{formik.errors.name}</p>
+                )}
               </div>
             </div>
 
@@ -62,10 +76,15 @@ export default function Register() {
                   id="email"
                   name="email"
                   type="email"
-                  required
                   autoComplete="email"
-                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-amber-600 sm:text-sm/6"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.email}
+                  className={getInputClassName(formik.touched.email, formik.errors.email)}
                 />
+                {formik.touched.email && formik.errors.email && (
+                  <p className="mt-1 text-sm text-red-500">{formik.errors.email}</p>
+                )}
               </div>
             </div>
 
@@ -78,26 +97,36 @@ export default function Register() {
                   id="password"
                   name="password"
                   type="password"
-                  required
                   autoComplete="new-password"
-                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-amber-600 sm:text-sm/6"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.password}
+                  className={getInputClassName(formik.touched.password, formik.errors.password)}
                 />
+                {formik.touched.password && formik.errors.password && (
+                  <p className="mt-1 text-sm text-red-500">{formik.errors.password}</p>
+                )}
               </div>
             </div>
 
             <div>
-              <label htmlFor="confirm-password" className="block text-sm/6 font-medium text-gray-900">
+              <label htmlFor="confirmPassword" className="block text-sm/6 font-medium text-gray-900">
                 Confirm password
               </label>
               <div className="mt-2">
                 <input
-                  id="confirm-password"
-                  name="confirm-password"
+                  id="confirmPassword"
+                  name="confirmPassword"
                   type="password"
-                  required
                   autoComplete="new-password"
-                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-amber-600 sm:text-sm/6"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.confirmPassword}
+                  className={getInputClassName(formik.touched.confirmPassword, formik.errors.confirmPassword)}
                 />
+                {formik.touched.confirmPassword && formik.errors.confirmPassword && (
+                  <p className="mt-1 text-sm text-red-500">{formik.errors.confirmPassword}</p>
+                )}
               </div>
             </div>
 
@@ -107,7 +136,7 @@ export default function Register() {
                 <button
                   type="button"
                   onClick={() => setUseSubdomain(!useSubdomain)}
-                  className="text-sm font-semibold text-amber-600 hover:text-amber-500"
+                  className="text-sm font-semibold text-amber-600 hover:text-amber-500 cursor-pointer"
                 >
                   {useSubdomain ? 'Select from list' : 'Use subdomain'}
                 </button>
@@ -115,17 +144,26 @@ export default function Register() {
 
               {useSubdomain ? (
                 <div className="mt-2">
-                  <div className="flex rounded-md bg-white outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-amber-600">
+                  <div className={`flex rounded-md bg-white outline-1 -outline-offset-1 focus-within:outline-2 focus-within:-outline-offset-2 ${
+                    formik.touched.subdomain && formik.errors.subdomain
+                      ? 'outline-red-500 focus-within:outline-red-500'
+                      : 'outline-gray-300 focus-within:outline-amber-600'
+                  }`}>
                     <input
                       id="subdomain"
                       name="subdomain"
                       type="text"
-                      required
                       placeholder="your-company"
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      value={formik.values.subdomain}
                       className="block min-w-0 grow py-1.5 pr-3 pl-3 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6"
                     />
                     <span className="flex items-center pr-3 text-gray-500 sm:text-sm">.localhost</span>
                   </div>
+                  {formik.touched.subdomain && formik.errors.subdomain && (
+                    <p className="mt-1 text-sm text-red-500">{formik.errors.subdomain}</p>
+                  )}
                 </div>
               ) : (
                 <Listbox value={selected} onChange={setSelected}>
@@ -166,7 +204,8 @@ export default function Register() {
             <div>
               <button
                 type="submit"
-                className="flex w-full justify-center rounded-md bg-amber-500 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-amber-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500"
+                disabled={formik.isSubmitting}
+                className="flex w-full justify-center rounded-md bg-amber-500 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-amber-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 Register
               </button>
@@ -184,4 +223,3 @@ export default function Register() {
     </>
   )
 }
-
