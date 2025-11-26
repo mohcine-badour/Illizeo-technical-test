@@ -1,0 +1,65 @@
+'use client'
+
+import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
+
+interface NoteItemProps {
+  id: number
+  content: string
+  author: string
+  avatar: string
+  createdAt: string
+  onModify?: (id: number) => void
+  onDelete?: (id: number) => void
+}
+
+export default function NoteItem({
+  id,
+  content,
+  author,
+  avatar,
+  createdAt,
+  onModify,
+  onDelete,
+}: NoteItemProps) {
+  return (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+      <div className="flex gap-4">
+        <div className="flex-shrink-0">
+          <div className="size-10 rounded-full bg-gray-200 overflow-hidden">
+            <img
+              src={avatar}
+              alt={`${author}'s avatar`}
+              className="size-full object-cover"
+            />
+          </div>
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="font-semibold text-gray-900">{author}</span>
+              <span className="ml-2 text-sm text-gray-500">{createdAt}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => onModify?.(id)}
+                className="p-2 rounded-lg text-gray-500 hover:text-amber-600 hover:bg-amber-50 transition-colors"
+                title="Modify"
+              >
+                <PencilSquareIcon className="size-5" />
+              </button>
+              <button
+                onClick={() => onDelete?.(id)}
+                className="p-2 rounded-lg text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors"
+                title="Delete"
+              >
+                <TrashIcon className="size-5" />
+              </button>
+            </div>
+          </div>
+          <p className="mt-2 text-gray-700 whitespace-pre-wrap">{content}</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
