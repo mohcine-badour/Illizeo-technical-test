@@ -11,12 +11,26 @@ import {
   XMarkIcon,
 } from '@heroicons/react/24/outline'
 import postItLogo from '../assets/images/post-it.png'
+import LogoutPopup from './Popups/Logout'
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [showLogoutPopup, setShowLogoutPopup] = useState(false)
+
+  const handleLogout = () => {
+    setShowLogoutPopup(false)
+    // Add logout logic here (e.g., clear auth, redirect to home)
+    console.log('User logged out')
+  }
 
   return (
-    <header className="bg-transparent">
+    <>
+      <LogoutPopup
+        open={showLogoutPopup}
+        onClose={() => setShowLogoutPopup(false)}
+        onConfirm={handleLogout}
+      />
+      <header className="bg-transparent">
       <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
         <div className="flex lg:flex-1">
           <a href="#" className="-m-1.5 p-1.5">
@@ -56,9 +70,12 @@ export default function Header() {
           <Link to="/register" className="text-sm/6 font-semibold text-gray-900">
             Register
           </Link>
-          <a href="#" className="text-sm/6 font-semibold text-gray-900">
+          <button
+            onClick={() => setShowLogoutPopup(true)}
+            className="text-sm/6 font-semibold text-gray-900 cursor-pointer"
+          >
             Log out
-          </a>
+          </button>
         </div>
       </nav>
       <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
@@ -117,17 +134,21 @@ export default function Header() {
                 >
                   Register
                 </Link>
-                <a
-                  href="#"
-                  className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false)
+                    setShowLogoutPopup(true)
+                  }}
+                  className="-mx-3 block w-full text-left rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50 cursor-pointer"
                 >
                   Log out
-                </a>
+                </button>
               </div>
             </div>
           </div>
         </DialogPanel>
       </Dialog>
     </header>
+    </>
   )
 }

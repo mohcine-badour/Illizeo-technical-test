@@ -1,6 +1,6 @@
 import Header from '../components/Header'
-import CreateNewNote from '../components/CreateNewNote'
-import NoteItem from '../components/NoteItem'
+import CreateNewNote from '../components/Notes/CreateNewNote'
+import NoteItem from '../components/Notes/NoteItem'
 
 const sampleNotes = [
   {
