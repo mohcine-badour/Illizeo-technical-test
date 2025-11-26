@@ -14,8 +14,8 @@ import {
   Bars3Icon,
   XMarkIcon,
 } from '@heroicons/react/24/outline'
-import postItLogo from '../assets/images/post-it.png'
-import LogoutPopup from './Popups/Logout'
+import postItLogo from '../../assets/images/post-it.png'
+import LogoutPopup from '../Popups/Logout'
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)

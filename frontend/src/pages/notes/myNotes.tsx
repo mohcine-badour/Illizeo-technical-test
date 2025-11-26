@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import Header from '../components/Header'
+import Header from '../../components/Home/Header'
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
-import DeletePopup from '../components/Popups/Delete'
-import EditNotePopup from '../components/Popups/EditNote'
+import DeletePopup from '../../components/Popups/Delete'
+import EditNotePopup from '../../components/Popups/EditNote'
 
 const allNotes = [
   {

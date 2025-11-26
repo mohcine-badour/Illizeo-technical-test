@@ -1,12 +1,12 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import HeroSection from "./components/HeroSection";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
-import ListNotes from "./pages/ListNotes";
-import MyNotes from "./pages/Mynotes";
-import Profile from "./pages/Profile";
+import HeroSection from "./components/Home/HeroSection";
+import Login from "./pages/auth/login";
+import Register from "./pages/auth/register";
+import Dashboard from "./pages/dashboard/dashboard";
+import ListNotes from "./pages/notes/listNotes";
+import MyNotes from "./pages/notes/myNotes";
+import Profile from "./pages/profile/profile";
 
 function App() {
   return (

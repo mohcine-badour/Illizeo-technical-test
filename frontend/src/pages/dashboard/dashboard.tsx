@@ -1,11 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import Header from '../components/Header'
-import CreateNewNote from '../components/Notes/CreateNewNote'
-import NoteItem from '../components/Notes/NoteItem'
-import DeletePopup from '../components/Popups/Delete'
-import EditNotePopup from '../components/Popups/EditNote'
+import Header from '../../components/Home/Header'
+import CreateNewNote from '../../components/Notes/CreateNewNote'
+import NoteItem from '../../components/Notes/NoteItem'
+import DeletePopup from '../../components/Popups/Delete'
+import EditNotePopup from '../../components/Popups/EditNote'
 
 const initialNotes = [
   {
