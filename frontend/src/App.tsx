@@ -1,12 +1,16 @@
 import "./App.css";
-import Header from "./components/Header";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HeroSection from "./components/HeroSection";
+import Login from "./pages/Login";
+
 function App() {
   return (
-    <>
-      {/* <Header /> */}
-      <HeroSection />
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HeroSection />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
