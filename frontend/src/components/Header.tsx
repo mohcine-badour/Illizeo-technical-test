@@ -56,9 +56,9 @@ export default function Header() {
           <Link to="/dashboard" className="text-sm/6 font-semibold text-gray-900">
             Dashboard
           </Link>
-          <a href="#" className="text-sm/6 font-semibold text-gray-900">
+          <Link to="/list-notes" className="text-sm/6 font-semibold text-gray-900">
             List notes
-          </a>
+          </Link>
           <a href="#" className="text-sm/6 font-semibold text-gray-900">
             My notes
           </a>
@@ -108,12 +108,12 @@ export default function Header() {
                 >
                   Dashboard
                 </Link>
-                <a
-                  href="#"
+                <Link
+                  to="/list-notes"
                   className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
                 >
                   List notes
-                </a>
+                </Link>
                 <a
                   href="#"
                   className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
