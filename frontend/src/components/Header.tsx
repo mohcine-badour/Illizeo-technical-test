@@ -50,9 +50,9 @@ export default function Header() {
           <Link to="/login" className="text-sm/6 font-semibold text-gray-900">
             Log in
           </Link>
-          <a href="#" className="text-sm/6 font-semibold text-gray-900">
+          <Link to="/register" className="text-sm/6 font-semibold text-gray-900">
             Register
-          </a>
+          </Link>
           <a href="#" className="text-sm/6 font-semibold text-gray-900">
             Log out
           </a>
@@ -102,12 +102,12 @@ export default function Header() {
                 >
                   Log in
                 </Link>
-                <a
-                  href="#"
+                <Link
+                  to="/register"
                   className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
                 >
                   Register
-                </a>
+                </Link>
                 <a
                   href="#"
                   className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
