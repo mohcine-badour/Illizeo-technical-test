@@ -5,6 +5,10 @@ import { Link, useLocation } from 'react-router-dom'
 import {
   Dialog,
   DialogPanel,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuItems,
 } from '@headlessui/react'
 import {
   Bars3Icon,
@@ -87,19 +91,48 @@ export default function Header() {
             My notes
           </Link>
         </div>
-        <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-x-6">
+        <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:items-center lg:gap-x-4">
           <Link to="/login" className="text-sm/6 font-semibold text-gray-900">
             Log in
           </Link>
           <Link to="/register" className="text-sm/6 font-semibold text-gray-900">
             Register
           </Link>
-          <button
-            onClick={() => setShowLogoutPopup(true)}
-            className="text-sm/6 font-semibold text-gray-900 cursor-pointer"
-          >
-            Log out
-          </button>
+
+          {/* Profile dropdown */}
+          <Menu as="div" className="relative">
+            <MenuButton className="relative flex rounded-full focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 cursor-pointer">
+              <span className="absolute -inset-1.5" />
+              <span className="sr-only">Open user menu</span>
+              <img
+                alt="User avatar"
+                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                className="size-8 rounded-full ring-2 ring-amber-500"
+              />
+            </MenuButton>
+
+            <MenuItems
+              transition
+              className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-lg bg-white py-1 shadow-lg ring-1 ring-gray-200 transition focus:outline-none data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+            >
+              <MenuItem>
+                <Link
+                  to="/profile"
+                  className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-amber-50 data-focus:text-amber-700"
+                >
+                  Your profile
+                </Link>
+              </MenuItem>
+              <MenuItem>
+                <button
+                  onClick={() => setShowLogoutPopup(true)}
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 data-focus:bg-amber-50 data-focus:text-amber-700 cursor-pointer"
+                >
+                  Sign out
+                </button>
+              </MenuItem>
+            </MenuItems>
+          </Menu>
         </div>
       </nav>
       <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
@@ -170,15 +203,22 @@ export default function Header() {
                 >
                   Register
                 </Link>
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false)
-                    setShowLogoutPopup(true)
-                  }}
-                  className="-mx-3 block w-full text-left rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50 cursor-pointer"
-                >
-                  Log out
-                </button>
+                <div className="flex items-center gap-x-3 -mx-3 px-3 py-2.5">
+                  <img
+                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                    alt="User avatar"
+                    className="size-8 rounded-full ring-2 ring-amber-500"
+                  />
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false)
+                      setShowLogoutPopup(true)
+                    }}
+                    className="text-base/7 font-semibold text-gray-900 hover:text-amber-600 cursor-pointer"
+                  >
+                    Log out
+                  </button>
+                </div>
               </div>
             </div>
           </div>
