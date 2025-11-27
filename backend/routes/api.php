@@ -10,6 +10,9 @@ use App\Http\Controllers\NoteController;
 // public Routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login',    [AuthController::class, 'login']);
+// Route::get('sanctum/csrf-cookie', function () {
+//     return response()->json(['message' => 'CSRF cookie set']);
+// });
 // protected Routes (auth:sanctum)
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user',      [AuthController::class, 'me']);
