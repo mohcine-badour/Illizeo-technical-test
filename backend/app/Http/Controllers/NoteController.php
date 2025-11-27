@@ -27,7 +27,11 @@ class NoteController extends Controller
                      ->latest()
                      ->paginate(10);
 
-        return response()->json($notes);
+        // return response()->json($notes);
+        return response()->json([
+            'data'  => $notes->items(), 
+            'total' => $notes->total(), 
+        ]);
     }
 
     /**
