@@ -17,6 +17,9 @@ import { useGetUser } from "../../hooks/useAuth";
 import { formatDate } from "../../utils/formDate";
 import { notify } from "../../utils/notifications";
 import { Toaster } from "react-hot-toast";
+import MyNotesSkeleton from "../../components/skeleton/MyNotesSkeleton";
+import AddNoteItemSkeleton from "../../components/skeleton/AddNoteItemSkeleton";
+import UpdateNoteItemSkeleton from "../../components/skeleton/UpdateNoteItemSkeleton";
 
 export default function MyNotes() {
   const [showDeletePopup, setShowDeletePopup] = useState(false);
@@ -24,12 +27,11 @@ export default function MyNotes() {
   const [showAddPopup, setShowAddPopup] = useState(false);
   const [selectedNoteId, setSelectedNoteId] = useState<number | null>(null);
   const [selectedNoteContent, setSelectedNoteContent] = useState("");
-
+  const { data: user } = useGetUser();
   const { data: notesData, isLoading } = useNotes();
   const { mutate: deleteNote, isPending: isDeleting } = useDeleteNote();
   const { mutate: updateNote, isPending: isUpdating } = useUpdateNote();
   const { mutate: createNote, isPending: isCreating } = useCreateNote();
-  const { data: user } = useGetUser();
   const notes = notesData?.data || [];
   const totalNotes = notesData?.total || 0;
 
@@ -123,9 +125,7 @@ export default function MyNotes() {
             </button>
           </div>
           {isLoading ? (
-            <div className="flex justify-center items-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
-            </div>
+            <MyNotesSkeleton />
           ) : notes.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-gray-500">
@@ -134,7 +134,11 @@ export default function MyNotes() {
             </div>
           ) : (
             <ul role="list" className="divide-y divide-gray-100">
+              {isCreating && <AddNoteItemSkeleton />}
               {notes.map((note) => (
+                isUpdating && selectedNoteId === note.id ? (
+                  <UpdateNoteItemSkeleton key={note.id} />
+                ) : (
                 <li key={note.id} className="flex justify-between gap-x-6 py-5">
                   <div className="flex min-w-0 gap-x-4">
                     <Avatar username={user?.name || "User"} />
@@ -173,6 +177,7 @@ export default function MyNotes() {
                     </div>
                   </div>
                 </li>
+                )
               ))}
             </ul>
           )}

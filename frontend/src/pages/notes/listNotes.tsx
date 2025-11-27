@@ -1,6 +1,8 @@
+import { useState, useMemo } from 'react'
 import Header from '../../components/Home/Header'
 import Avatar from '../../components/Avatar/Avatar'
 import { useGetUser } from '../../hooks/useAuth'
+import { highlightText } from '../../utils/search'
 
 const allNotes = [
   {
@@ -68,6 +70,18 @@ const allNotes = [
 export default function ListNotes() {
   const { data: user } = useGetUser()
   const currentUser = user?.name || ''
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const filteredNotes = useMemo(() => {
+    if (!searchQuery.trim()) return allNotes
+
+    const query = searchQuery.toLowerCase()
+    return allNotes.filter(
+      (note) =>
+        note.content.toLowerCase().includes(query) ||
+        note.author.toLowerCase().includes(query)
+    )
+  }, [searchQuery])
 
   return (
     <div className="min-h-screen bg-white">
@@ -78,6 +92,8 @@ export default function ListNotes() {
           <div className="relative">
             <input
               type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search notes..."
               className="w-64 rounded-lg border border-gray-300 bg-white px-4 py-2 pl-10 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
             />
@@ -96,41 +112,49 @@ export default function ListNotes() {
             </svg>
           </div>
         </div>
-        <ul role="list" className="divide-y divide-gray-100">
-          {allNotes.map((note) => {
-            const isMyNote = note.author === currentUser
-            return (
-              <li
-                key={note.id}
-                className={`flex justify-between gap-x-6 py-5 px-4 rounded-lg ${
-                  isMyNote ? 'bg-amber-50' : ''
-                }`}
-              >
-                <div className="flex min-w-0 gap-x-4">
-                  <div className={`flex-none ${isMyNote ? 'ring-2 ring-amber-500 rounded-full' : ''}`}>
-                    <Avatar username={note.author} />
+        {filteredNotes.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-500">No notes found matching "{searchQuery}"</p>
+          </div>
+        ) : (
+          <ul role="list" className="divide-y divide-gray-100">
+            {filteredNotes.map((note) => {
+              const isMyNote = note.author === currentUser
+              return (
+                <li
+                  key={note.id}
+                  className={`flex justify-between gap-x-6 py-5 px-4 rounded-lg ${
+                    isMyNote ? 'bg-amber-50' : ''
+                  }`}
+                >
+                  <div className="flex min-w-0 gap-x-4">
+                    <div className={`flex-none ${isMyNote ? 'ring-2 ring-amber-500 rounded-full' : ''}`}>
+                      <Avatar username={note.author} />
+                    </div>
+                    <div className="min-w-0 flex-auto">
+                      <p className="text-sm/6 font-semibold text-gray-900">
+                        {highlightText(note.author, searchQuery)}
+                        {isMyNote && (
+                          <span className="ml-2 inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
+                            You
+                          </span>
+                        )}
+                      </p>
+                      <p className="mt-1 truncate text-xs/5 text-gray-500">
+                        {highlightText(note.content, searchQuery)}
+                      </p>
+                    </div>
                   </div>
-                  <div className="min-w-0 flex-auto">
-                    <p className="text-sm/6 font-semibold text-gray-900">
-                      {note.author}
-                      {isMyNote && (
-                        <span className="ml-2 inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
-                          You
-                        </span>
-                      )}
+                  <div className="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
+                    <p className="mt-1 text-xs/5 text-gray-500">
+                      <time dateTime={note.createdAtDateTime}>{note.createdAt}</time>
                     </p>
-                    <p className="mt-1 truncate text-xs/5 text-gray-500">{note.content}</p>
                   </div>
-                </div>
-                <div className="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
-                  <p className="mt-1 text-xs/5 text-gray-500">
-                    <time dateTime={note.createdAtDateTime}>{note.createdAt}</time>
-                  </p>
-                </div>
-              </li>
-            )
-          })}
-        </ul>
+                </li>
+              )
+            })}
+          </ul>
+        )}
       </main>
     </div>
   )

@@ -6,7 +6,6 @@ import CreateNewNote from "../../components/Notes/CreateNewNote";
 import NoteItem from "../../components/Notes/NoteItem";
 import DeletePopup from "../../components/Popups/Delete";
 import EditNotePopup from "../../components/Popups/EditNote";
-import { useNotes } from "../../hooks/useNotes";
 
 const initialNotes = [
   {

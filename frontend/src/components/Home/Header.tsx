@@ -18,12 +18,14 @@ import postItLogo from '../../assets/images/post-it.png'
 import LogoutPopup from '../Popups/Logout'
 import { useAuth } from '../../context/AuthContext'
 import Avatar from '../Avatar/Avatar'
+import { useGetUser } from '../../hooks/useAuth'
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [showLogoutPopup, setShowLogoutPopup] = useState(false)
   const location = useLocation()
   const { token, logout } = useAuth()
+  const { data: user } = useGetUser()
   const isAuthenticated = !!token
 
   const isActive = (path: string) => location.pathname === path
@@ -109,7 +111,7 @@ export default function Header() {
               <MenuButton className="relative flex rounded-full focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 cursor-pointer">
                 <span className="absolute -inset-1.5" />
                 <span className="sr-only">Open user menu</span>
-                <Avatar username="User" />
+                <Avatar username={user?.name || "User"} />
               </MenuButton>
 
               <MenuItems
@@ -210,7 +212,7 @@ export default function Header() {
                   </>
                 ) : (
                   <div className="flex items-center gap-x-3 -mx-3 px-3 py-2.5">
-                    <Avatar username="User" />
+                    <Avatar username={user?.name || "User"} />
                     <button
                       onClick={() => {
                         setMobileMenuOpen(false)

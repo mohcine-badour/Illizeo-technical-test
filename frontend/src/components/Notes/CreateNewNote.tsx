@@ -2,9 +2,11 @@
 
 import { useState } from 'react'
 import Avatar from '../Avatar/Avatar'
+import { useGetUser } from '../../hooks/useAuth'
 
 export default function CreateNewNote() {
   const [content, setContent] = useState('')
+  const { data: user } = useGetUser()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -19,7 +21,7 @@ export default function CreateNewNote() {
       <form onSubmit={handleSubmit}>
         <div className="flex gap-4">
           <div className="flex-shrink-0">
-            <Avatar username="User" />
+            <Avatar username={user?.name || "User"} />
           </div>
           <div className="flex-1">
             <textarea
