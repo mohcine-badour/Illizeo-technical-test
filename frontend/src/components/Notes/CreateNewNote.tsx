@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Avatar from '../Avatar/Avatar'
 
 export default function CreateNewNote() {
   const [content, setContent] = useState('')
@@ -18,13 +19,7 @@ export default function CreateNewNote() {
       <form onSubmit={handleSubmit}>
         <div className="flex gap-4">
           <div className="flex-shrink-0">
-            <div className="size-10 rounded-full bg-gray-200 overflow-hidden">
-              <img
-                src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                alt="User avatar"
-                className="size-full object-cover"
-              />
-            </div>
+            <Avatar username="User" />
           </div>
           <div className="flex-1">
             <textarea

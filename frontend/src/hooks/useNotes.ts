@@ -1,4 +1,3 @@
-// src/hooks/useNotes.ts
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchNotes, createNote, updateNote, deleteNote } from "../api/notes";
 
@@ -24,7 +23,7 @@ export function useCreateNote() {
 export function useUpdateNote() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, payload }: { id: number; payload: { title: string; content?: string } }) => updateNote(id, payload),
+    mutationFn: ({ id, payload }: { id: number; payload: { content: string } }) => updateNote(id, payload),
     onSuccess() {
       qc.invalidateQueries({ queryKey: ["notes"] });
     },

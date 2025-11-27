@@ -6,7 +6,7 @@ import CreateNewNote from "../../components/Notes/CreateNewNote";
 import NoteItem from "../../components/Notes/NoteItem";
 import DeletePopup from "../../components/Popups/Delete";
 import EditNotePopup from "../../components/Popups/EditNote";
-// import { useNotes } from "../../hooks/useNotes";
+import { useNotes } from "../../hooks/useNotes";
 
 const initialNotes = [
   {
@@ -62,13 +62,6 @@ export default function Dashboard() {
   const [showEditPopup, setShowEditPopup] = useState(false);
   const [selectedNoteId, setSelectedNoteId] = useState<number | null>(null);
   const [selectedNoteContent, setSelectedNoteContent] = useState("");
-
-  // const { data: notes, isLoading } = useNotes();
-  // const create = useCreateNote();
-  // const del = useDeleteNote();
-  // const [title, setTitle] = useState("");
-
-  // if (isLoading) return <div>Chargement...</div>;
 
   const handleModify = (id: number) => {
     const note = notes.find((n) => n.id === id);

@@ -1,4 +1,6 @@
 import Header from '../../components/Home/Header'
+import Avatar from '../../components/Avatar/Avatar'
+import { useGetUser } from '../../hooks/useAuth'
 
 const allNotes = [
   {
@@ -64,7 +66,8 @@ const allNotes = [
 ]
 
 export default function ListNotes() {
-  const currentUser = 'Leslie Alexander' // Current logged in user
+  const { data: user } = useGetUser()
+  const currentUser = user?.name || ''
 
   return (
     <div className="min-h-screen bg-white">
@@ -104,13 +107,9 @@ export default function ListNotes() {
                 }`}
               >
                 <div className="flex min-w-0 gap-x-4">
-                  <img
-                    alt=""
-                    src={note.imageUrl}
-                    className={`size-12 flex-none rounded-full ${
-                      isMyNote ? 'ring-2 ring-amber-500' : 'bg-gray-50'
-                    }`}
-                  />
+                  <div className={`flex-none ${isMyNote ? 'ring-2 ring-amber-500 rounded-full' : ''}`}>
+                    <Avatar username={note.author} />
+                  </div>
                   <div className="min-w-0 flex-auto">
                     <p className="text-sm/6 font-semibold text-gray-900">
                       {note.author}
