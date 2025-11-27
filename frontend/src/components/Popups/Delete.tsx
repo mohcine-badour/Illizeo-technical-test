@@ -9,6 +9,7 @@ interface DeletePopupProps {
   onConfirm: () => void
   title?: string
   message?: string
+  isLoading?: boolean
 }
 
 export default function DeletePopup({
@@ -17,6 +18,7 @@ export default function DeletePopup({
   onConfirm,
   title = 'Delete note',
   message = 'Are you sure you want to delete this note? This action cannot be undone.',
+  isLoading = false,
 }: DeletePopupProps) {
   return (
     <Dialog open={open} onClose={onClose} className="relative z-10">
@@ -52,15 +54,17 @@ export default function DeletePopup({
               <button
                 type="button"
                 onClick={onConfirm}
-                className="inline-flex w-full justify-center rounded-xl bg-red-600 px-6 py-2 text-sm font-semibold text-white hover:bg-red-500 sm:ml-3 sm:w-32 cursor-pointer"
+                disabled={isLoading}
+                className="inline-flex w-full justify-center rounded-xl bg-red-600 px-6 py-2 text-sm font-semibold text-white hover:bg-red-500 sm:ml-3 sm:w-32 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Delete
+                {isLoading ? 'Deleting...' : 'Delete'}
               </button>
               <button
                 type="button"
                 data-autofocus
                 onClick={onClose}
-                className="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto cursor-pointer"
+                disabled={isLoading}
+                className="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Cancel
               </button>

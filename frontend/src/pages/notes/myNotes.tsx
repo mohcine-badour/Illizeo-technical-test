@@ -26,9 +26,9 @@ export default function MyNotes() {
   const [selectedNoteContent, setSelectedNoteContent] = useState("");
 
   const { data: notesData, isLoading } = useNotes();
-  const { mutate: deleteNote } = useDeleteNote();
-  const { mutate: updateNote } = useUpdateNote();
-  const { mutate: createNote } = useCreateNote();
+  const { mutate: deleteNote, isPending: isDeleting } = useDeleteNote();
+  const { mutate: updateNote, isPending: isUpdating } = useUpdateNote();
+  const { mutate: createNote, isPending: isCreating } = useCreateNote();
   const { data: user } = useGetUser();
   const notes = notesData?.data || [];
   const totalNotes = notesData?.total || 0;
@@ -90,17 +90,20 @@ export default function MyNotes() {
         open={showDeletePopup}
         onClose={() => setShowDeletePopup(false)}
         onConfirm={handleDeleteConfirm}
+        isLoading={isDeleting}
       />
       <EditNotePopup
         open={showEditPopup}
         onClose={() => setShowEditPopup(false)}
         onConfirm={handleEditConfirm}
         initialContent={selectedNoteContent}
+        isLoading={isUpdating}
       />
       <AddNotePopup
         open={showAddPopup}
         onClose={() => setShowAddPopup(false)}
         onConfirm={handleAddConfirm}
+        isLoading={isCreating}
       />
       <div className="min-h-screen bg-white">
       <Toaster position="bottom-right" reverseOrder={false} />

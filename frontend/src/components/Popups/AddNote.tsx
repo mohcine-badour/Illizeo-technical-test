@@ -8,12 +8,14 @@ interface AddNotePopupProps {
   open: boolean
   onClose: () => void
   onConfirm: (content: string) => void
+  isLoading?: boolean
 }
 
 export default function AddNotePopup({
   open,
   onClose,
   onConfirm,
+  isLoading = false,
 }: AddNotePopupProps) {
   const [content, setContent] = useState('')
 
@@ -67,16 +69,17 @@ export default function AddNotePopup({
               <button
                 type="button"
                 onClick={handleSubmit}
-                disabled={!content.trim()}
+                disabled={!content.trim() || isLoading}
                 className="inline-flex w-full justify-center rounded-xl bg-amber-500 px-6 py-2 text-sm font-semibold text-white hover:bg-amber-400 sm:ml-3 sm:w-32 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
-                Add note
+                {isLoading ? 'Adding...' : 'Add note'}
               </button>
               <button
                 type="button"
                 data-autofocus
                 onClick={handleClose}
-                className="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto cursor-pointer"
+                disabled={isLoading}
+                className="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Cancel
               </button>

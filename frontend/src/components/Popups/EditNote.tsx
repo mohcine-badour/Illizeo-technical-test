@@ -9,6 +9,7 @@ interface EditNotePopupProps {
   onClose: () => void
   onConfirm: (content: string) => void
   initialContent?: string
+  isLoading?: boolean
 }
 
 export default function EditNotePopup({
@@ -16,6 +17,7 @@ export default function EditNotePopup({
   onClose,
   onConfirm,
   initialContent = '',
+  isLoading = false,
 }: EditNotePopupProps) {
   const [content, setContent] = useState(initialContent)
 
@@ -67,16 +69,17 @@ export default function EditNotePopup({
               <button
                 type="button"
                 onClick={handleSubmit}
-                disabled={!content.trim()}
+                disabled={!content.trim() || isLoading}
                 className="inline-flex w-full justify-center rounded-xl bg-amber-500 px-6 py-2 text-sm font-semibold text-white hover:bg-amber-400 sm:ml-3 sm:w-32 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
-                Save
+                {isLoading ? 'Saving...' : 'Save'}
               </button>
               <button
                 type="button"
                 data-autofocus
                 onClick={onClose}
-                className="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto cursor-pointer"
+                disabled={isLoading}
+                className="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Cancel
               </button>
