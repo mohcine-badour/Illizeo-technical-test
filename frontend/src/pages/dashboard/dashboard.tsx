@@ -6,6 +6,9 @@ import CreateNewNote from "../../components/Notes/CreateNewNote";
 import NoteItem from "../../components/Notes/NoteItem";
 import DeletePopup from "../../components/Popups/Delete";
 import EditNotePopup from "../../components/Popups/EditNote";
+import { useCreateNote } from "../../hooks/useNotes";
+import { notify } from "../../utils/notifications";
+import { Toaster } from "react-hot-toast";
 
 const initialNotes = [
   {
@@ -61,6 +64,21 @@ export default function Dashboard() {
   const [showEditPopup, setShowEditPopup] = useState(false);
   const [selectedNoteId, setSelectedNoteId] = useState<number | null>(null);
   const [selectedNoteContent, setSelectedNoteContent] = useState("");
+  const { mutate: createNote, isPending: isCreating } = useCreateNote();
+
+  const handleCreateNote = (content: string) => {
+    createNote(
+      { content },
+      {
+        onSuccess: () => {
+          notify("Note created successfully", "success");
+        },
+        onError: () => {
+          notify("Failed to create note", "error");
+        },
+      }
+    );
+  };
 
   const handleModify = (id: number) => {
     const note = notes.find((n) => n.id === id);
@@ -97,6 +115,7 @@ export default function Dashboard() {
 
   return (
     <>
+      <Toaster position="bottom-right" reverseOrder={false} />
       <DeletePopup
         open={showDeletePopup}
         onClose={() => setShowDeletePopup(false)}
@@ -116,7 +135,7 @@ export default function Dashboard() {
           </h1>
 
           <div className="mt-8">
-            <CreateNewNote />
+            <CreateNewNote onCreate={handleCreateNote} isLoading={isCreating} />
           </div>
 
           <div className="mt-8 space-y-4">

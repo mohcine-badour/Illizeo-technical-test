@@ -4,14 +4,19 @@ import { useState } from 'react'
 import Avatar from '../Avatar/Avatar'
 import { useGetUser } from '../../hooks/useAuth'
 
-export default function CreateNewNote() {
+interface CreateNewNoteProps {
+  onCreate?: (content: string) => void
+  isLoading?: boolean
+}
+
+export default function CreateNewNote({ onCreate, isLoading = false }: CreateNewNoteProps) {
   const [content, setContent] = useState('')
   const { data: user } = useGetUser()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (content.trim()) {
-      console.log('New note:', content)
+    if (content.trim() && onCreate) {
+      onCreate(content)
       setContent('')
     }
   }
@@ -34,10 +39,10 @@ export default function CreateNewNote() {
             <div className="flex justify-end pt-2 border-t border-gray-100">
               <button
                 type="submit"
-                disabled={!content.trim()}
+                disabled={!content.trim() || isLoading}
                 className="rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
-                Post
+                {isLoading ? 'Posting...' : 'Post'}
               </button>
             </div>
           </div>
