@@ -22,11 +22,13 @@ import { useLogin } from "../../hooks/useAuth";
 import { notify } from "../../utils/notifications";
 import { useNavigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Login() {
   const [selected, setSelected] = useState(companies[0]);
   const { mutate: login, isPending } = useLogin();
   const navigate = useNavigate();
+  const { login: loginContext } = useAuth();
   const formik = useFormik({
     initialValues: loginInitialValues,
     validationSchema: loginValidationSchema,
@@ -37,8 +39,9 @@ export default function Login() {
         company: selected,
       };
       login(payload, {
-        onSuccess: () => {
-          notify("Login successful", "success");
+        onSuccess: (data) => {
+          loginContext(data.token);
+          notify(data.message, "success");
           setTimeout(() => {
             navigate("/dashboard");
           }, 1500);

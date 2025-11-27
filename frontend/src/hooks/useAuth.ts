@@ -1,5 +1,5 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { loginApi, saveToken, removeToken, registerApi } from "../api/auth";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { loginApi, saveToken, removeToken, registerApi, getUserApi } from "../api/auth";
 
 export function useLogin() {
   const qc = useQueryClient();
@@ -25,6 +25,13 @@ export function useRegister() {
     },
   });
 } 
+
+export function useGetUser() {
+  return useQuery({
+    queryKey: ["user"],
+    queryFn: getUserApi,
+  });
+}
 
 export function useLogout() {
   const qc = useQueryClient();

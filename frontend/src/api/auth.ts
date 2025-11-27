@@ -1,4 +1,3 @@
-// src/api/auth.ts
 import api from "./axios";
 
 export type LoginPayload = { email: string; password: string; subdomain?: string };
@@ -13,6 +12,11 @@ export async function loginApi(data: LoginPayload) {
 export async function registerApi(payload: RegisterPayload) {
   const res = await api.post("/register", payload);
   
+  return res.data;
+}
+
+export async function getUserApi() {
+  const res = await api.get("/user");
   return res.data;
 }
 

@@ -8,6 +8,8 @@ import ListNotes from "./pages/notes/listNotes";
 import MyNotes from "./pages/notes/myNotes";
 import Profile from "./pages/profile/profile";
 import { motion, AnimatePresence } from "framer-motion";
+import ProtectedRoute from "./routing/ProtectedRoute";
+import { AuthProvider } from "./context/AuthContext";
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -25,10 +27,17 @@ function AnimatedRoutes() {
           <Route path="/" element={<HeroSection />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/list-notes" element={<ListNotes />} />
-          <Route path="/my-notes" element={<MyNotes />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/list-notes" element={<ProtectedRoute><ListNotes /></ProtectedRoute>} />
+          <Route path="/my-notes" element={<ProtectedRoute><MyNotes /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         </Routes>
       </motion.div>
     </AnimatePresence>
@@ -37,9 +46,11 @@ function AnimatedRoutes() {
 
 function App() {
   return (
-    <BrowserRouter>
-      <AnimatedRoutes />
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <AnimatedRoutes />
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
