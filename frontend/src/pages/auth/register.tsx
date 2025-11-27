@@ -42,10 +42,13 @@ export default function Register() {
       };
       register(payload, {
         onSuccess: () => {
-          notify("Account created successfully");
+          notify("Account created successfully", "success");
           setTimeout(() => {
             navigate("/login");
           }, 1500);
+        },
+        onError: () => {
+          notify("Account creation failed", "error");
         },
       });
     },
@@ -270,7 +273,7 @@ export default function Register() {
             <div>
               <button
                 type="submit"
-                disabled={formik.isSubmitting}
+                disabled={isPending}
                 className="flex w-full justify-center rounded-md bg-amber-500 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-amber-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 {isPending ? "Registering..." : "Register"}
