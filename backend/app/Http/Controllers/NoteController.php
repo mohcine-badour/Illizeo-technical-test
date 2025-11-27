@@ -1,0 +1,93 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Note;
+use Illuminate\Http\Response;
+
+class NoteController extends Controller
+{
+
+    public function __construct()
+    {
+        // protect all routes of the controller by Sanctum
+        $this->middleware('auth:sanctum');
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
+    {
+        $user = $request->user();
+
+        // simple pagination ; adapt to needs
+        $notes = Note::where('user_id', $user->id)
+                     ->latest()
+                     ->paginate(10);
+
+        return response()->json($notes);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        
+        $note = Note::create([
+            'content' => $request->content,
+            'user_id' => $request->user()->id
+        ]);
+
+        return response()->json([
+            'message' => 'Note created',
+            'note'    => $note
+        ], Response::HTTP_CREATED);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Request $request, Note $note)
+    {
+        // check if the note belongs to the user
+        if ($note->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Forbidden'], Response::HTTP_FORBIDDEN);
+        }
+
+        return response()->json($note);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Note $note)
+    {
+        if ($note->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Forbidden'], Response::HTTP_FORBIDDEN);
+        }
+
+        $note->update($request->all());
+
+        return response()->json([
+            'message' => 'Note updated',
+            'note'    => $note
+        ]);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Request $request, Note $note)
+    {
+        if ($note->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Forbidden'], Response::HTTP_FORBIDDEN);
+        }
+
+        $note->delete();
+
+        return response()->json(['message' => 'Note deleted']);
+    }
+}

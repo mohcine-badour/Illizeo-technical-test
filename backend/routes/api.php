@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\AuthController;
 use App\Models\User;
+use App\Http\Controllers\NoteController;
 
 // public Routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -16,4 +17,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/dashboard', function () {
         return response()->json(['message' => 'Bienvenue !']);
     });
+    Route::apiResource('notes', NoteController::class);
 });
