@@ -1,34 +1,50 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useFormik } from 'formik'
-import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react'
-import { ChevronUpDownIcon } from '@heroicons/react/16/solid'
-import { CheckIcon } from '@heroicons/react/20/solid'
-import postItLogo from '../../assets/images/post-it.png'
+import { useState } from "react";
+import { useFormik } from "formik";
+import {
+  Listbox,
+  ListboxButton,
+  ListboxOption,
+  ListboxOptions,
+} from "@headlessui/react";
+import { ChevronUpDownIcon } from "@heroicons/react/16/solid";
+import { CheckIcon } from "@heroicons/react/20/solid";
+import postItLogo from "../../assets/images/post-it.png";
 import {
   getRegisterValidationSchema,
   registerInitialValues,
   getInputClassName,
   companies,
-} from '../../utils/formHelpers'
+} from "../../utils/formHelpers";
+import { useRegister } from "../../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
-  const [selected, setSelected] = useState(companies[0])
-  const [useSubdomain, setUseSubdomain] = useState(false)
+  const [selected, setSelected] = useState(companies[0]);
+  const [useSubdomain, setUseSubdomain] = useState(false);
+  const { mutate: register, isPending } = useRegister();
+  const navigate = useNavigate();
 
   const formik = useFormik({
     initialValues: registerInitialValues,
     validationSchema: getRegisterValidationSchema(useSubdomain),
     enableReinitialize: true,
     onSubmit: (values) => {
-      console.log('Register submitted:', {
-        ...values,
+      const payload = {
+        name: values.name,
+        email: values.email,
+        password: values.password,
+        password_confirmation: values.confirmPassword,
         company: useSubdomain ? values.subdomain : selected,
-      })
-      // Add your registration logic here
+      };
+      register(payload, {
+        onSuccess: () => {
+          navigate("/login");
+        },
+      });
     },
-  })
+  });
 
   return (
     <>
@@ -47,7 +63,10 @@ export default function Register() {
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form onSubmit={formik.handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="name" className="block text-sm/6 font-medium text-gray-900">
+              <label
+                htmlFor="name"
+                className="block text-sm/6 font-medium text-gray-900"
+              >
                 Full name
               </label>
               <div className="mt-2">
@@ -59,16 +78,24 @@ export default function Register() {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   value={formik.values.name}
-                  className={getInputClassName(formik.touched.name, formik.errors.name)}
+                  className={getInputClassName(
+                    formik.touched.name,
+                    formik.errors.name
+                  )}
                 />
                 {formik.touched.name && formik.errors.name && (
-                  <p className="mt-1 text-sm text-red-500">{formik.errors.name}</p>
+                  <p className="mt-1 text-sm text-red-500">
+                    {formik.errors.name}
+                  </p>
                 )}
               </div>
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
+              <label
+                htmlFor="email"
+                className="block text-sm/6 font-medium text-gray-900"
+              >
                 Email address
               </label>
               <div className="mt-2">
@@ -80,16 +107,24 @@ export default function Register() {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   value={formik.values.email}
-                  className={getInputClassName(formik.touched.email, formik.errors.email)}
+                  className={getInputClassName(
+                    formik.touched.email,
+                    formik.errors.email
+                  )}
                 />
                 {formik.touched.email && formik.errors.email && (
-                  <p className="mt-1 text-sm text-red-500">{formik.errors.email}</p>
+                  <p className="mt-1 text-sm text-red-500">
+                    {formik.errors.email}
+                  </p>
                 )}
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm/6 font-medium text-gray-900">
+              <label
+                htmlFor="password"
+                className="block text-sm/6 font-medium text-gray-900"
+              >
                 Password
               </label>
               <div className="mt-2">
@@ -101,16 +136,24 @@ export default function Register() {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   value={formik.values.password}
-                  className={getInputClassName(formik.touched.password, formik.errors.password)}
+                  className={getInputClassName(
+                    formik.touched.password,
+                    formik.errors.password
+                  )}
                 />
                 {formik.touched.password && formik.errors.password && (
-                  <p className="mt-1 text-sm text-red-500">{formik.errors.password}</p>
+                  <p className="mt-1 text-sm text-red-500">
+                    {formik.errors.password}
+                  </p>
                 )}
               </div>
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm/6 font-medium text-gray-900">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm/6 font-medium text-gray-900"
+              >
                 Confirm password
               </label>
               <div className="mt-2">
@@ -122,33 +165,43 @@ export default function Register() {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   value={formik.values.confirmPassword}
-                  className={getInputClassName(formik.touched.confirmPassword, formik.errors.confirmPassword)}
+                  className={getInputClassName(
+                    formik.touched.confirmPassword,
+                    formik.errors.confirmPassword
+                  )}
                 />
-                {formik.touched.confirmPassword && formik.errors.confirmPassword && (
-                  <p className="mt-1 text-sm text-red-500">{formik.errors.confirmPassword}</p>
-                )}
+                {formik.touched.confirmPassword &&
+                  formik.errors.confirmPassword && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {formik.errors.confirmPassword}
+                    </p>
+                  )}
               </div>
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="block text-sm/6 font-medium text-gray-900">Company</span>
+                <span className="block text-sm/6 font-medium text-gray-900">
+                  Company
+                </span>
                 <button
                   type="button"
                   onClick={() => setUseSubdomain(!useSubdomain)}
                   className="text-sm font-semibold text-amber-600 hover:text-amber-500 cursor-pointer"
                 >
-                  {useSubdomain ? 'Select from list' : 'Use subdomain'}
+                  {useSubdomain ? "Select from list" : "Use subdomain"}
                 </button>
               </div>
 
               {useSubdomain ? (
                 <div className="mt-2">
-                  <div className={`flex rounded-md bg-white outline-1 -outline-offset-1 focus-within:outline-2 focus-within:-outline-offset-2 ${
-                    formik.touched.subdomain && formik.errors.subdomain
-                      ? 'outline-red-500 focus-within:outline-red-500'
-                      : 'outline-gray-300 focus-within:outline-amber-600'
-                  }`}>
+                  <div
+                    className={`flex rounded-md bg-white outline-1 -outline-offset-1 focus-within:outline-2 focus-within:-outline-offset-2 ${
+                      formik.touched.subdomain && formik.errors.subdomain
+                        ? "outline-red-500 focus-within:outline-red-500"
+                        : "outline-gray-300 focus-within:outline-amber-600"
+                    }`}
+                  >
                     <input
                       id="subdomain"
                       name="subdomain"
@@ -159,10 +212,14 @@ export default function Register() {
                       value={formik.values.subdomain}
                       className="block min-w-0 grow py-1.5 pr-3 pl-3 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6"
                     />
-                    <span className="flex items-center pr-3 text-gray-500 sm:text-sm">.localhost</span>
+                    <span className="flex items-center pr-3 text-gray-500 sm:text-sm">
+                      .localhost
+                    </span>
                   </div>
                   {formik.touched.subdomain && formik.errors.subdomain && (
-                    <p className="mt-1 text-sm text-red-500">{formik.errors.subdomain}</p>
+                    <p className="mt-1 text-sm text-red-500">
+                      {formik.errors.subdomain}
+                    </p>
                   )}
                 </div>
               ) : (
@@ -188,7 +245,9 @@ export default function Register() {
                           value={company}
                           className="group relative cursor-default py-2 pr-9 pl-3 text-gray-900 select-none data-focus:bg-amber-500 data-focus:text-white data-focus:outline-hidden"
                         >
-                          <span className="block truncate font-normal group-data-selected:font-semibold">{company.name}</span>
+                          <span className="block truncate font-normal group-data-selected:font-semibold">
+                            {company.name}
+                          </span>
 
                           <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-amber-600 group-not-data-selected:hidden group-data-focus:text-white">
                             <CheckIcon aria-hidden="true" className="size-5" />
@@ -207,19 +266,22 @@ export default function Register() {
                 disabled={formik.isSubmitting}
                 className="flex w-full justify-center rounded-md bg-amber-500 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-amber-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
-                Register
+                {isPending ? "Registering..." : "Register"}
               </button>
             </div>
           </form>
 
           <p className="mt-10 text-center text-sm/6 text-gray-500">
-            Already have an account?{' '}
-            <a href="/login" className="font-semibold text-amber-600 hover:text-amber-500">
+            Already have an account?{" "}
+            <a
+              href="/login"
+              className="font-semibold text-amber-600 hover:text-amber-500"
+            >
               Sign in
             </a>
           </p>
         </div>
       </div>
     </>
-  )
+  );
 }
