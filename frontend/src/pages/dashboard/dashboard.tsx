@@ -32,7 +32,6 @@ export default function Dashboard() {
   const { mutate: createNote, isPending: isCreating } = useCreateNote();
   const { mutate: updateNote, isPending: isUpdating } = useUpdateNote();
   const { mutate: deleteNote, isPending: isDeleting } = useDeleteNote();
-
   const notes = notesData?.data || [];
 
   const handleCreateNote = (content: string) => {
@@ -138,8 +137,8 @@ export default function Dashboard() {
             <ul role="list" className="mt-8 divide-y divide-gray-100">
               {isCreating && <AddNoteItemSkeleton />}
               {notes.map((note) => {
-                const isOwner = note.user_id === user?.id;
-                const authorName = isOwner ? user?.name || "User" : "Username";
+                const isOwner = note.user_id === user?.id || note.user?.id === user?.id;
+                const authorName = note.user?.name || "User";
                 return isUpdating && selectedNoteId === note.id ? (
                   <UpdateNoteItemSkeleton key={note.id} />
                 ) : (

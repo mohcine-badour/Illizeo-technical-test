@@ -19,8 +19,7 @@ export default function ListNotes() {
 
     const query = searchQuery.toLowerCase()
     return notes.filter((note) => {
-      const isMyNote = note.user_id === user?.id
-      const authorName = isMyNote ? (currentUser || 'User') : 'Username'
+      const authorName = note.user?.name || 'User'
       return (
         note.content.toLowerCase().includes(query) ||
         authorName.toLowerCase().includes(query)
@@ -72,8 +71,8 @@ export default function ListNotes() {
         ) : (
           <ul role="list" className="divide-y divide-gray-100">
             {filteredNotes.map((note) => {
-              const isMyNote = note.user_id === user?.id
-              const authorName = isMyNote ? (currentUser || 'User') : 'Username'
+              const isMyNote = note.user_id === user?.id || note.user?.id === user?.id
+              const authorName = note.user?.name || 'User'
               return (
                 <li
                   key={note.id}

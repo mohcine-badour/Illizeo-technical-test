@@ -35,7 +35,7 @@ export default function MyNotes() {
   
   const notes = useMemo(() => {
     if (!user?.id || !notesData?.data) return [];
-    return notesData.data.filter((note) => note.user_id === user.id);
+    return notesData.data.filter((note) => note.user_id === user.id || note.user?.id === user.id);
   }, [notesData, user]);
   
   const totalNotes = notes.length;

@@ -1,22 +1,15 @@
 import Header from './Header'
 import bgSection from '../../assets/images/bg-section.jpg'
 
-const links = [
-  { name: 'Create notes', href: '#' },
-  { name: 'Browse all notes', href: '#' },
-  { name: 'My notes', href: '#' },
-  { name: 'Get started', href: '#' },
-]
-
 export default function HeroSection() {
   return (
-    <div className="bg-gray-100">
+    <div className="bg-gray-100 h-screen flex flex-col overflow-hidden">
       <Header />
-      <div className="relative isolate overflow-hidden py-20 sm:py-20">
+      <div className="relative isolate overflow-hidden py-20 sm:py-20 flex-1">
       <img
         alt=""
         src={bgSection}
-        className="absolute inset-0 -z-10 size-full object-cover object-right md:object-center"
+        className="absolute inset-0 -z-10 h-full w-full object-cover object-right md:object-center"
       />
       <div
         aria-hidden="true"
@@ -46,18 +39,9 @@ export default function HeroSection() {
         <div className="mx-auto max-w-2xl lg:mx-0">
           <h2 className="text-5xl font-semibold tracking-tight text-gray-900 sm:text-7xl">Manage your notes with ease</h2>
           <p className="mt-8 text-lg font-medium text-pretty text-gray-600 sm:text-xl/8">
-            Capture your thoughts, organize your ideas, and never forget anything important. Create, share, and manage
+            Capture your thoughts, organize your ideas, and never forget anything important. Create, and manage
             your notes seamlessly from anywhere.
           </p>
-        </div>
-        <div className="mx-auto mt-10 max-w-2xl lg:mx-0 lg:max-w-none">
-          <div className="grid grid-cols-1 gap-x-8 gap-y-6 text-base/7 font-semibold text-gray-900 sm:grid-cols-2 md:flex lg:gap-x-10">
-            {links.map((link) => (
-              <a key={link.name} href={link.href}>
-                {link.name} <span aria-hidden="true">&rarr;</span>
-              </a>
-            ))}
-          </div>
         </div>
       </div>
       </div>

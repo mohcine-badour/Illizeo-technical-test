@@ -45,13 +45,14 @@ export default function Header() {
       <header className="bg-transparent">
       <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
         <div className="flex lg:flex-1">
-          <a href="#" className="-m-1.5 p-1.5">
+          <a href="#" className="-m-1.5 p-1.5 flex items-center gap-2">
             <span className="sr-only">Your Company</span>
             <img
               alt=""
               src={postItLogo}
               className="h-8 w-auto"
             />
+            <span className="text-xl font-semibold text-gray-900">Note It</span>
           </a>
         </div>
         <div className="flex lg:hidden">
@@ -64,38 +65,40 @@ export default function Header() {
             <Bars3Icon aria-hidden="true" className="size-6" />
           </button>
         </div>
-        <div className="hidden lg:flex lg:gap-x-12">
-          <Link
-            to="/dashboard"
-            className={`text-sm/6 font-semibold px-3 py-1.5 rounded-lg transition-colors ${
-              isActive('/dashboard')
-                ? 'bg-amber-100 text-amber-700'
-                : 'text-gray-900 hover:bg-gray-100'
-            }`}
-          >
-            Dashboard
-          </Link>
-          <Link
-            to="/list-notes"
-            className={`text-sm/6 font-semibold px-3 py-1.5 rounded-lg transition-colors ${
-              isActive('/list-notes')
-                ? 'bg-amber-100 text-amber-700'
-                : 'text-gray-900 hover:bg-gray-100'
-            }`}
-          >
-            List notes
-          </Link>
-          <Link
-            to="/my-notes"
-            className={`text-sm/6 font-semibold px-3 py-1.5 rounded-lg transition-colors ${
-              isActive('/my-notes')
-                ? 'bg-amber-100 text-amber-700'
-                : 'text-gray-900 hover:bg-gray-100'
-            }`}
-          >
-            My notes
-          </Link>
-        </div>
+        {isAuthenticated && (
+          <div className="hidden lg:flex lg:gap-x-12">
+            <Link
+              to="/dashboard"
+              className={`text-sm/6 font-semibold px-3 py-1.5 rounded-lg transition-colors ${
+                isActive('/dashboard')
+                  ? 'bg-amber-100 text-amber-700'
+                  : 'text-gray-900 hover:bg-gray-100'
+              }`}
+            >
+              Dashboard
+            </Link>
+            <Link
+              to="/list-notes"
+              className={`text-sm/6 font-semibold px-3 py-1.5 rounded-lg transition-colors ${
+                isActive('/list-notes')
+                  ? 'bg-amber-100 text-amber-700'
+                  : 'text-gray-900 hover:bg-gray-100'
+              }`}
+            >
+              List notes
+            </Link>
+            <Link
+              to="/my-notes"
+              className={`text-sm/6 font-semibold px-3 py-1.5 rounded-lg transition-colors ${
+                isActive('/my-notes')
+                  ? 'bg-amber-100 text-amber-700'
+                  : 'text-gray-900 hover:bg-gray-100'
+              }`}
+            >
+              My notes
+            </Link>
+          </div>
+        )}
         <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:items-center lg:gap-x-4">
           {!isAuthenticated ? (
             <>
@@ -143,13 +146,14 @@ export default function Header() {
         <div className="fixed inset-0 z-50" />
         <DialogPanel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white p-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
           <div className="flex items-center justify-between">
-            <a href="#" className="-m-1.5 p-1.5">
+            <a href="#" className="-m-1.5 p-1.5 flex items-center gap-2">
               <span className="sr-only">Your Company</span>
               <img
                 alt=""
                 src={postItLogo}
                 className="h-8 w-auto"
               />
+              <span className="text-xl font-semibold text-gray-900">Post It</span>
             </a>
             <button
               type="button"
@@ -162,38 +166,40 @@ export default function Header() {
           </div>
           <div className="mt-6 flow-root">
             <div className="-my-6 divide-y divide-gray-500/10">
-              <div className="space-y-2 py-6">
-                <Link
-                  to="/dashboard"
-                  className={`-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold ${
-                    isActive('/dashboard')
-                      ? 'bg-amber-100 text-amber-700'
-                      : 'text-gray-900 hover:bg-gray-50'
-                  }`}
-                >
-                  Dashboard
-                </Link>
-                <Link
-                  to="/list-notes"
-                  className={`-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold ${
-                    isActive('/list-notes')
-                      ? 'bg-amber-100 text-amber-700'
-                      : 'text-gray-900 hover:bg-gray-50'
-                  }`}
-                >
-                  List notes
-                </Link>
-                <Link
-                  to="/my-notes"
-                  className={`-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold ${
-                    isActive('/my-notes')
-                      ? 'bg-amber-100 text-amber-700'
-                      : 'text-gray-900 hover:bg-gray-50'
-                  }`}
-                >
-                  My notes
-                </Link>
-              </div>
+              {isAuthenticated && (
+                <div className="space-y-2 py-6">
+                  <Link
+                    to="/dashboard"
+                    className={`-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold ${
+                      isActive('/dashboard')
+                        ? 'bg-amber-100 text-amber-700'
+                        : 'text-gray-900 hover:bg-gray-50'
+                    }`}
+                  >
+                    Dashboard
+                  </Link>
+                  <Link
+                    to="/list-notes"
+                    className={`-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold ${
+                      isActive('/list-notes')
+                        ? 'bg-amber-100 text-amber-700'
+                        : 'text-gray-900 hover:bg-gray-50'
+                    }`}
+                  >
+                    List notes
+                  </Link>
+                  <Link
+                    to="/my-notes"
+                    className={`-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold ${
+                      isActive('/my-notes')
+                        ? 'bg-amber-100 text-amber-700'
+                        : 'text-gray-900 hover:bg-gray-50'
+                    }`}
+                  >
+                    My notes
+                  </Link>
+                </div>
+              )}
               <div className="py-6 space-y-2">
                 {!isAuthenticated ? (
                   <>
