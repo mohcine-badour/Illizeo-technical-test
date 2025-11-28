@@ -35,7 +35,7 @@ class NoteController extends Controller
     public function index(Request $request)
     {
 
-        $notes = Note::latest()->paginate(10);
+        $notes = Note::with('user')->latest()->paginate(10);
 
         return response()->json([
             'data'  => $notes->items(), 
@@ -68,6 +68,8 @@ class NoteController extends Controller
             'user_id' => $request->user()->id
         ]);
 
+        $note->load('user');
+
         return response()->json([
             'message' => 'Note created',
             'note'    => $note
@@ -84,6 +86,7 @@ class NoteController extends Controller
             return response()->json(['message' => 'Forbidden'], Response::HTTP_FORBIDDEN);
         }
 
+        $note->load('user');
         return response()->json($note);
     }
 
@@ -97,6 +100,7 @@ class NoteController extends Controller
         }
 
         $note->update($request->all());
+        $note->load('user');
 
         return response()->json([
             'message' => 'Note updated',
