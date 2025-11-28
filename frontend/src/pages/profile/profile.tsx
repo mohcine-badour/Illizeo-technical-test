@@ -1,8 +1,16 @@
+import { useMemo } from 'react'
 import Header from '../../components/Home/Header'
 import { useGetUser } from '../../hooks/useAuth'
+import { useNotes } from '../../hooks/useNotes'
 
 export default function Profile() {
   const { data: user, isLoading } = useGetUser()
+  const { data: notesData } = useNotes()
+  
+  const totalNotes = useMemo(() => {
+    if (!user?.id || !notesData?.data) return 0
+    return notesData.data.filter((note) => note.user_id === user.id || note.user?.id === user.id).length
+  }, [notesData, user])
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -47,7 +55,7 @@ export default function Profile() {
                   <dt className="text-sm/6 font-medium text-gray-900">Total notes</dt>
                   <dd className="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
                     <span className="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-800">
-                      24 notes
+                      {totalNotes} {totalNotes === 1 ? 'note' : 'notes'}
                     </span>
                   </dd>
                 </div>
