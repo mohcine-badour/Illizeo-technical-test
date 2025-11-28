@@ -34,27 +34,20 @@ class NoteController extends Controller
      */
     public function index(Request $request)
     {
-
-        $notes = Note::with('user')->latest()->paginate(10);
+        $user = $request->user();
+        
+        // Get notes from users in the same company
+        $notes = Note::with('user')
+            ->whereHas('user', function ($query) use ($user) {
+                $query->where('company_id', $user->company_id);
+            })
+            ->latest()
+            ->paginate(10);
 
         return response()->json([
             'data'  => $notes->items(), 
             'total' => $notes->total(), 
         ]);
-
-
-        // $user = $request->user();
-
-        // // simple pagination ; adapt to needs
-        // $notes = Note::where('user_id', $user->id)
-        //              ->latest()
-        //              ->paginate(10);
-
-        // // return response()->json($notes);
-        // return response()->json([
-        //     'data'  => $notes->items(), 
-        //     'total' => $notes->total(), 
-        // ]);
     }
 
     /**
@@ -81,12 +74,14 @@ class NoteController extends Controller
      */
     public function show(Request $request, Note $note)
     {
-        // check if the note belongs to the user
-        if ($note->user_id !== $request->user()->id) {
+        $user = $request->user();
+        
+        // check if the note belongs to a user in the same company
+        $note->load('user');
+        if ($note->user->company_id !== $user->company_id) {
             return response()->json(['message' => 'Forbidden'], Response::HTTP_FORBIDDEN);
         }
 
-        $note->load('user');
         return response()->json($note);
     }
 
@@ -95,7 +90,11 @@ class NoteController extends Controller
      */
     public function update(Request $request, Note $note)
     {
-        if ($note->user_id !== $request->user()->id) {
+        $user = $request->user();
+        
+        // check if the note belongs to a user in the same company
+        $note->load('user');
+        if ($note->user->company_id !== $user->company_id) {
             return response()->json(['message' => 'Forbidden'], Response::HTTP_FORBIDDEN);
         }
 
@@ -113,7 +112,11 @@ class NoteController extends Controller
      */
     public function destroy(Request $request, Note $note)
     {
-        if ($note->user_id !== $request->user()->id) {
+        $user = $request->user();
+        
+        // check if the note belongs to a user in the same company
+        $note->load('user');
+        if ($note->user->company_id !== $user->company_id) {
             return response()->json(['message' => 'Forbidden'], Response::HTTP_FORBIDDEN);
         }
 
