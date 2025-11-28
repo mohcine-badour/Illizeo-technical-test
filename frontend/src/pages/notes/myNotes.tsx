@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Header from "../../components/Home/Header";
 import Avatar from "../../components/Avatar/Avatar";
 import {
@@ -32,8 +32,14 @@ export default function MyNotes() {
   const { mutate: deleteNote, isPending: isDeleting } = useDeleteNote();
   const { mutate: updateNote, isPending: isUpdating } = useUpdateNote();
   const { mutate: createNote, isPending: isCreating } = useCreateNote();
-  const notes = notesData?.data || [];
-  const totalNotes = notesData?.total || 0;
+  
+  const notes = useMemo(() => {
+    if (!user?.id || !notesData?.data) return [];
+    return notesData.data.filter((note) => note.user_id === user.id);
+  }, [notesData, user]);
+  
+  const totalNotes = notes.length;
+
 
   const handleDeleteClick = (id: number) => {
     setSelectedNoteId(id);

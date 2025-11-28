@@ -2,86 +2,31 @@ import { useState, useMemo } from 'react'
 import Header from '../../components/Home/Header'
 import Avatar from '../../components/Avatar/Avatar'
 import { useGetUser } from '../../hooks/useAuth'
+import { useNotes } from '../../hooks/useNotes'
 import { highlightText } from '../../utils/search'
-
-const allNotes = [
-  {
-    id: 1,
-    content: 'Remember to finish the quarterly report by Friday. Need to include sales data and customer feedback analysis.',
-    author: 'Leslie Alexander',
-    email: 'leslie.alexander@example.com',
-    imageUrl:
-      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    createdAt: '3h ago',
-    createdAtDateTime: '2023-01-23T13:23Z',
-  },
-  {
-    id: 2,
-    content: 'Meeting notes: Discussed new product launch timeline. Marketing team needs 3 weeks for campaign preparation.',
-    author: 'Michael Foster',
-    email: 'michael.foster@example.com',
-    imageUrl:
-      'https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    createdAt: '5h ago',
-    createdAtDateTime: '2023-01-23T11:23Z',
-  },
-  {
-    id: 3,
-    content: 'Ideas for the team building event: Escape room, Cooking class, Outdoor adventure, Board game night.',
-    author: 'Dries Vincent',
-    email: 'dries.vincent@example.com',
-    imageUrl:
-      'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    createdAt: 'Yesterday',
-    createdAtDateTime: '2023-01-22T09:00Z',
-  },
-  {
-    id: 4,
-    content: 'Bug fix deployed to production. Issue with user authentication has been resolved. Monitoring for any new issues.',
-    author: 'Lindsay Walton',
-    email: 'lindsay.walton@example.com',
-    imageUrl:
-      'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    createdAt: '2 days ago',
-    createdAtDateTime: '2023-01-21T14:30Z',
-  },
-  {
-    id: 5,
-    content: 'Overall positive response to the new UI design. Minor adjustments needed on mobile navigation.',
-    author: 'Courtney Henry',
-    email: 'courtney.henry@example.com',
-    imageUrl:
-      'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    createdAt: '3 days ago',
-    createdAtDateTime: '2023-01-20T10:15Z',
-  },
-  {
-    id: 6,
-    content: 'Review of Q1 goals and progress. Need to schedule follow-up meetings with department heads.',
-    author: 'Tom Cook',
-    email: 'tom.cook@example.com',
-    imageUrl:
-      'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    createdAt: '1 week ago',
-    createdAtDateTime: '2023-01-16T16:45Z',
-  },
-]
+import { formatDate } from '../../utils/formDate'
 
 export default function ListNotes() {
   const { data: user } = useGetUser()
+  const { data: notesData, isLoading } = useNotes()
   const currentUser = user?.name || ''
   const [searchQuery, setSearchQuery] = useState('')
 
+  const notes = notesData?.data || []
+
   const filteredNotes = useMemo(() => {
-    if (!searchQuery.trim()) return allNotes
+    if (!searchQuery.trim()) return notes
 
     const query = searchQuery.toLowerCase()
-    return allNotes.filter(
-      (note) =>
+    return notes.filter((note) => {
+      const isMyNote = note.user_id === user?.id
+      const authorName = isMyNote ? (currentUser || 'User') : 'Username'
+      return (
         note.content.toLowerCase().includes(query) ||
-        note.author.toLowerCase().includes(query)
-    )
-  }, [searchQuery])
+        authorName.toLowerCase().includes(query)
+      )
+    })
+  }, [searchQuery, notes, currentUser, user?.id])
 
   return (
     <div className="min-h-screen bg-white">
@@ -112,14 +57,23 @@ export default function ListNotes() {
             </svg>
           </div>
         </div>
-        {filteredNotes.length === 0 ? (
+        {isLoading ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
+          </div>
+        ) : filteredNotes.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-500">No notes found matching "{searchQuery}"</p>
+            <p className="text-gray-500">
+              {searchQuery.trim() 
+                ? `No notes found matching "${searchQuery}"`
+                : 'No notes yet. Create your first note!'}
+            </p>
           </div>
         ) : (
           <ul role="list" className="divide-y divide-gray-100">
             {filteredNotes.map((note) => {
-              const isMyNote = note.author === currentUser
+              const isMyNote = note.user_id === user?.id
+              const authorName = isMyNote ? (currentUser || 'User') : 'Username'
               return (
                 <li
                   key={note.id}
@@ -128,12 +82,12 @@ export default function ListNotes() {
                   }`}
                 >
                   <div className="flex min-w-0 gap-x-4">
-                    <div className={`flex-none ${isMyNote ? 'ring-2 ring-amber-500 rounded-full' : ''}`}>
-                      <Avatar username={note.author} />
+                    <div className="flex-none">
+                      <Avatar username={authorName} />
                     </div>
                     <div className="min-w-0 flex-auto">
                       <p className="text-sm/6 font-semibold text-gray-900">
-                        {highlightText(note.author, searchQuery)}
+                        {highlightText(authorName, searchQuery)}
                         {isMyNote && (
                           <span className="ml-2 inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
                             You
@@ -147,7 +101,7 @@ export default function ListNotes() {
                   </div>
                   <div className="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
                     <p className="mt-1 text-xs/5 text-gray-500">
-                      <time dateTime={note.createdAtDateTime}>{note.createdAt}</time>
+                      <time dateTime={note.created_at}>{formatDate(note.created_at)}</time>
                     </p>
                   </div>
                 </li>

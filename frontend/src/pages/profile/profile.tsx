@@ -1,6 +1,5 @@
 import Header from '../../components/Home/Header'
 import { useGetUser } from '../../hooks/useAuth'
-import Avatar from '../../components/Avatar/Avatar'
 
 export default function Profile() {
   const { data: user, isLoading } = useGetUser()
@@ -24,7 +23,7 @@ export default function Profile() {
         ) : user ? (
           <>
             <div className="px-4 sm:px-0 flex items-center gap-4">
-              <Avatar username={user.name} />
+              
               <div>
                 <h3 className="text-2xl font-bold text-gray-900">User Profile</h3>
                 <p className="mt-1 max-w-2xl text-sm/6 text-gray-500">Your personal details and account information.</p>

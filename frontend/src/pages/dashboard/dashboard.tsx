@@ -6,65 +6,25 @@ import CreateNewNote from "../../components/Notes/CreateNewNote";
 import NoteItem from "../../components/Notes/NoteItem";
 import DeletePopup from "../../components/Popups/Delete";
 import EditNotePopup from "../../components/Popups/EditNote";
-import { useCreateNote } from "../../hooks/useNotes";
+import { useNotes, useCreateNote, useUpdateNote, useDeleteNote } from "../../hooks/useNotes";
+import { useGetUser } from "../../hooks/useAuth";
 import { notify } from "../../utils/notifications";
 import { Toaster } from "react-hot-toast";
-
-const initialNotes = [
-  {
-    id: 1,
-    content:
-      "Remember to finish the quarterly report by Friday. Need to include sales data and customer feedback analysis.",
-    author: "Sarah Johnson",
-    avatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    createdAt: "2 hours ago",
-  },
-  {
-    id: 2,
-    content:
-      "Meeting notes: Discussed new product launch timeline. Marketing team needs 3 weeks for campaign preparation.",
-    author: "Michael Chen",
-    avatar:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    createdAt: "5 hours ago",
-  },
-  {
-    id: 3,
-    content:
-      "Ideas for the team building event:\n- Escape room\n- Cooking class\n- Outdoor adventure\n- Board game night",
-    author: "Emily Davis",
-    avatar:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    createdAt: "Yesterday",
-  },
-  {
-    id: 4,
-    content:
-      "Bug fix deployed to production. Issue with user authentication has been resolved. Monitoring for any new issues.",
-    author: "James Wilson",
-    avatar:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    createdAt: "2 days ago",
-  },
-  {
-    id: 5,
-    content:
-      "Client feedback summary: Overall positive response to the new UI design. Minor adjustments needed on mobile navigation.",
-    author: "Lisa Thompson",
-    avatar:
-      "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    createdAt: "3 days ago",
-  },
-];
+import { formatDate } from "../../utils/formDate";
 
 export default function Dashboard() {
-  const [notes, setNotes] = useState(initialNotes);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [showEditPopup, setShowEditPopup] = useState(false);
   const [selectedNoteId, setSelectedNoteId] = useState<number | null>(null);
   const [selectedNoteContent, setSelectedNoteContent] = useState("");
+  
+  const { data: notesData, isLoading } = useNotes();
+  const { data: user } = useGetUser();
   const { mutate: createNote, isPending: isCreating } = useCreateNote();
+  const { mutate: updateNote, isPending: isUpdating } = useUpdateNote();
+  const { mutate: deleteNote, isPending: isDeleting } = useDeleteNote();
+  
+  const notes = notesData?.data || [];
 
   const handleCreateNote = (content: string) => {
     createNote(
@@ -90,14 +50,22 @@ export default function Dashboard() {
   };
 
   const handleEditConfirm = (newContent: string) => {
-    setNotes((prevNotes) =>
-      prevNotes.map((note) =>
-        note.id === selectedNoteId ? { ...note, content: newContent } : note
-      )
-    );
-    setShowEditPopup(false);
-    setSelectedNoteId(null);
-    setSelectedNoteContent("");
+    if (selectedNoteId) {
+      updateNote(
+        { id: selectedNoteId, payload: { content: newContent } },
+        {
+          onSuccess: () => {
+            notify("Note updated successfully", "success");
+            setShowEditPopup(false);
+            setSelectedNoteId(null);
+            setSelectedNoteContent("");
+          },
+          onError: () => {
+            notify("Failed to update note", "error");
+          },
+        }
+      );
+    }
   };
 
   const handleDelete = (id: number) => {
@@ -106,11 +74,18 @@ export default function Dashboard() {
   };
 
   const handleDeleteConfirm = () => {
-    setNotes((prevNotes) =>
-      prevNotes.filter((note) => note.id !== selectedNoteId)
-    );
-    setShowDeletePopup(false);
-    setSelectedNoteId(null);
+    if (selectedNoteId) {
+      deleteNote(selectedNoteId, {
+        onSuccess: () => {
+          notify("Note deleted successfully", "success");
+          setShowDeletePopup(false);
+          setSelectedNoteId(null);
+        },
+        onError: () => {
+          notify("Failed to delete note", "error");
+        },
+      });
+    }
   };
 
   return (
@@ -120,12 +95,14 @@ export default function Dashboard() {
         open={showDeletePopup}
         onClose={() => setShowDeletePopup(false)}
         onConfirm={handleDeleteConfirm}
+        isLoading={isDeleting}
       />
       <EditNotePopup
         open={showEditPopup}
         onClose={() => setShowEditPopup(false)}
         onConfirm={handleEditConfirm}
         initialContent={selectedNoteContent}
+        isLoading={isUpdating}
       />
       <div className="min-h-screen bg-white">
         <Header />
@@ -138,20 +115,34 @@ export default function Dashboard() {
             <CreateNewNote onCreate={handleCreateNote} isLoading={isCreating} />
           </div>
 
-          <div className="mt-8 space-y-4">
-            {notes.map((note) => (
-              <NoteItem
-                key={note.id}
-                id={note.id}
-                content={note.content}
-                author={note.author}
-                avatar={note.avatar}
-                createdAt={note.createdAt}
-                onModify={handleModify}
-                onDelete={handleDelete}
-              />
-            ))}
-          </div>
+          {isLoading ? (
+            <div className="mt-8 flex justify-center items-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
+            </div>
+          ) : notes.length === 0 ? (
+            <div className="mt-8 text-center py-12">
+              <p className="text-gray-500">No notes yet. Create your first note!</p>
+            </div>
+          ) : (
+            <div className="mt-8 space-y-4">
+              {notes.map((note) => {
+                const isOwner = note.user_id === user?.id;
+                const authorName = isOwner ? (user?.name || "User") : "Username";
+                return (
+                  <NoteItem
+                    key={note.id}
+                    id={note.id}
+                    content={note.content}
+                    author={authorName}
+                    createdAt={formatDate(note.created_at)}
+                    onModify={handleModify}
+                    onDelete={handleDelete}
+                    showActions={isOwner}
+                  />
+                );
+              })}
+            </div>
+          )}
         </main>
       </div>
     </>
