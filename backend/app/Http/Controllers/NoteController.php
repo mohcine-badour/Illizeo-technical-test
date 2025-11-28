@@ -14,24 +14,47 @@ class NoteController extends Controller
         // protect all routes of the controller by Sanctum
         $this->middleware('auth:sanctum');
     }
+    
+    /**
+     * Get all notes (all users).
+     */
+    // public function getAllNotes(Request $request)
+    // {
+    //     // Get all notes with pagination
+    //     $notes = Note::latest()->paginate(10);
+
+    //     return response()->json([
+    //         'data'  => $notes->items(), 
+    //         'total' => $notes->total(), 
+    //     ]);
+    // }
 
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $user = $request->user();
 
-        // simple pagination ; adapt to needs
-        $notes = Note::where('user_id', $user->id)
-                     ->latest()
-                     ->paginate(10);
+        $notes = Note::latest()->paginate(10);
 
-        // return response()->json($notes);
         return response()->json([
             'data'  => $notes->items(), 
             'total' => $notes->total(), 
         ]);
+
+
+        // $user = $request->user();
+
+        // // simple pagination ; adapt to needs
+        // $notes = Note::where('user_id', $user->id)
+        //              ->latest()
+        //              ->paginate(10);
+
+        // // return response()->json($notes);
+        // return response()->json([
+        //     'data'  => $notes->items(), 
+        //     'total' => $notes->total(), 
+        // ]);
     }
 
     /**
@@ -95,17 +118,4 @@ class NoteController extends Controller
         return response()->json(['message' => 'Note deleted']);
     }
 
-    /**
-     * Get all notes (all users).
-     */
-    public function getAllNotes(Request $request)
-    {
-        // Get all notes with pagination
-        $notes = Note::latest()->paginate(10);
-
-        return response()->json([
-            'data'  => $notes->items(), 
-            'total' => $notes->total(), 
-        ]);
-    }
 }
