@@ -94,4 +94,18 @@ class NoteController extends Controller
 
         return response()->json(['message' => 'Note deleted']);
     }
+
+    /**
+     * Get all notes (all users).
+     */
+    public function getAllNotes(Request $request)
+    {
+        // Get all notes with pagination
+        $notes = Note::latest()->paginate(10);
+
+        return response()->json([
+            'data'  => $notes->items(), 
+            'total' => $notes->total(), 
+        ]);
+    }
 }

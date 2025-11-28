@@ -18,4 +18,5 @@ Route::middleware('auth:sanctum')->group(function () {
         return response()->json(['message' => 'Bienvenue !']);
     });
     Route::apiResource('notes', NoteController::class);
+    Route::get('/notes/all', [NoteController::class, 'getAllNotes']);
 });
