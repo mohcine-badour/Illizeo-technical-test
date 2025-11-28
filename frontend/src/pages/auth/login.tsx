@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useFormik } from "formik";
 import {
   Label,
@@ -16,38 +16,81 @@ import {
   loginValidationSchema,
   loginInitialValues,
   getInputClassName,
-  companies,
 } from "../../utils/formHelpers";
-import { useLogin } from "../../hooks/useAuth";
+import { useLoadCompanies, useLogin } from "../../hooks/useAuth";
 import { notify } from "../../utils/notifications";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
+import type { Company } from "../../types/global";
 
 export default function Login() {
-  const [selected, setSelected] = useState(companies[0]);
   const { mutate: login, isPending } = useLogin();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { data: companiesData, isLoading: isLoadingCompanies } =
+    useLoadCompanies();
   const { login: loginContext } = useAuth();
+  const companies = useMemo(
+    () => companiesData?.data || [],
+    [companiesData?.data]
+  );
+  const [selected, setSelected] = useState<Company | null>(null);
+  const hasInitialized = useRef(false);
+
+  // Get email and company_id from location state (passed from register page)
+  const locationState = location.state as { email?: string; company_id?: number } | null;
+  const prefillEmail = locationState?.email || "";
+  const prefillCompanyId = locationState?.company_id;
+
+  // Initialize selected company when companies data loads from API
+  useEffect(() => {
+    if (companies.length > 0 && !hasInitialized.current) {
+      // If company_id is provided from register, select that company
+      if (prefillCompanyId) {
+        const company = companies.find((c) => c.id === prefillCompanyId);
+        if (company) {
+          setSelected(company);
+          hasInitialized.current = true;
+        } else {
+          // Fallback to first company if not found
+          setSelected(companies[0]);
+          hasInitialized.current = true;
+        }
+      } else {
+        // Default to first company
+        setSelected(companies[0]);
+        hasInitialized.current = true;
+      }
+    }
+  }, [companies, prefillCompanyId]);
+  
   const formik = useFormik({
-    initialValues: loginInitialValues,
+    initialValues: {
+      ...loginInitialValues,
+      email: prefillEmail,
+    },
     validationSchema: loginValidationSchema,
+    enableReinitialize: true,
     onSubmit: (values) => {
+      if (!selected) {
+        notify("Please select a company", "error");
+        return;
+      }
       const payload = {
         email: values.email,
         password: values.password,
-        company: selected,
+        company_id: selected.id.toString(),
       };
       login(payload, {
         onSuccess: (data) => {
           loginContext(data.token);
           notify(data.message, "success");
-          setTimeout(() => {
-            navigate("/dashboard");
-          }, 1500);
+          // Clear location state
+          navigate("/dashboard", { replace: true });
         },
         onError: () => {
-          notify("Invalid email or password", "error");
+          notify("Invalid credentials", "error");
           formik.resetForm();
         },
       });
@@ -57,7 +100,7 @@ export default function Login() {
   return (
     <>
       <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-      <Toaster position="bottom-right" reverseOrder={false} />
+        <Toaster position="bottom-right" reverseOrder={false} />
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <img
             alt="Your Company"
@@ -71,14 +114,22 @@ export default function Login() {
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form onSubmit={formik.handleSubmit} className="space-y-6">
-            <Listbox value={selected} onChange={setSelected}>
+            <Listbox
+              value={selected}
+              onChange={setSelected}
+              disabled={isLoadingCompanies || companies.length === 0}
+            >
               <Label className="block text-sm/6 font-medium text-gray-900">
                 Select your company
               </Label>
               <div className="relative mt-2">
-                <ListboxButton className="grid w-full cursor-default grid-cols-1 rounded-md bg-white py-1.5 pr-2 pl-3 text-left text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-amber-600 sm:text-sm/6">
+                <ListboxButton className="grid w-full cursor-default grid-cols-1 rounded-md bg-white py-1.5 pr-2 pl-3 text-left text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-amber-600 sm:text-sm/6 disabled:opacity-50 disabled:cursor-not-allowed">
                   <span className="col-start-1 row-start-1 flex items-center pr-6">
-                    <span className="block truncate">{selected.name}</span>
+                    <span className="block truncate">
+                      {isLoadingCompanies
+                        ? "Loading companies..."
+                        : selected?.name || "Select a company"}
+                    </span>
                   </span>
                   <ChevronUpDownIcon
                     aria-hidden="true"
@@ -90,7 +141,7 @@ export default function Login() {
                   transition
                   className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg outline-1 outline-black/5 data-leave:transition data-leave:duration-100 data-leave:ease-in data-closed:data-leave:opacity-0 sm:text-sm"
                 >
-                  {companies.map((company) => (
+                  {companies.map((company: Company) => (
                     <ListboxOption
                       key={company.id}
                       value={company}
@@ -173,7 +224,6 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={isPending}
-                // disabled={formik.isSubmitting || isPending}
                 className="flex w-full justify-center rounded-md bg-amber-500 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-amber-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 {isPending ? "Signing in..." : "Sign in"}

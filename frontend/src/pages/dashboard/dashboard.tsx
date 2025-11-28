@@ -34,6 +34,9 @@ export default function Dashboard() {
   const { mutate: deleteNote, isPending: isDeleting } = useDeleteNote();
   const notes = notesData?.data || [];
 
+  console.log(user);
+  console.log(notes);
+
   const handleCreateNote = (content: string) => {
     createNote(
       { content },

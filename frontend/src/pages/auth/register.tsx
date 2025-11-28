@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useFormik } from "formik";
 import {
   Listbox,
@@ -15,40 +15,70 @@ import {
   getRegisterValidationSchema,
   registerInitialValues,
   getInputClassName,
-  companies,
 } from "../../utils/formHelpers";
-import { useRegister } from "../../hooks/useAuth";
+import { useRegister, useLoadCompanies } from "../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { notify } from "../../utils/notifications";
+import type { Company } from "../../types/global";
 
 export default function Register() {
-  const [selected, setSelected] = useState(companies[0]);
-  const [useSubdomain, setUseSubdomain] = useState(false);
+  const [createNewCompany, setCreateNewCompany] = useState(false);
   const { mutate: register, isPending } = useRegister();
   const navigate = useNavigate();
+  const { data: companiesData, isLoading: isLoadingCompanies } =
+    useLoadCompanies();
+  const companies = useMemo(
+    () => companiesData?.data || [],
+    [companiesData?.data]
+  );
+  const [selected, setSelected] = useState<Company | null>(null);
+  const hasInitialized = useRef(false);
+
+  // Initialize selected company when companies data loads from API (only when not creating new company)
+  useEffect(() => {
+    if (!createNewCompany && companies.length > 0 && !hasInitialized.current) {
+      setSelected(companies[0]);
+      hasInitialized.current = true;
+    }
+  }, [companies, createNewCompany]);
 
   const formik = useFormik({
     initialValues: registerInitialValues,
-    validationSchema: getRegisterValidationSchema(useSubdomain),
+    validationSchema: getRegisterValidationSchema(createNewCompany),
     enableReinitialize: true,
     onSubmit: (values) => {
+      if (!createNewCompany && !selected) {
+        notify("Please select a company", "error");
+        return;
+      }
+      if (createNewCompany && !values.company_name) {
+        notify("Please enter a company name", "error");
+        return;
+      }
       const payload = {
         name: values.name,
         email: values.email,
         password: values.password,
         password_confirmation: values.confirmPassword,
-        company: useSubdomain ? values.subdomain : selected,
+        ...(createNewCompany
+          ? { company_name: values.company_name }
+          : { company_id: selected!.id }),
       };
       register(payload, {
         onSuccess: () => {
           notify("Account created successfully", "success");
           setTimeout(() => {
-            navigate("/login");
+            navigate("/login", {
+              state: {
+                email: values.email,
+                company_id: createNewCompany ? null : selected!.id,
+              },
+            });
           }, 1500);
         },
-        onError: () => {
-          notify("Account creation failed", "error");
+        onError: (response) => {
+          notify(response.response.data.message, "error");
         },
       });
     },
@@ -196,48 +226,59 @@ export default function Register() {
                 </span>
                 <button
                   type="button"
-                  onClick={() => setUseSubdomain(!useSubdomain)}
+                  onClick={() => setCreateNewCompany(!createNewCompany)}
                   className="text-sm font-semibold text-amber-600 hover:text-amber-500 cursor-pointer"
                 >
-                  {useSubdomain ? "Select from list" : "Use subdomain"}
+                  {createNewCompany
+                    ? "Select existing company"
+                    : "Create new company"}
                 </button>
               </div>
 
-              {useSubdomain ? (
+              {createNewCompany ? (
                 <div className="mt-2">
                   <div
                     className={`flex rounded-md bg-white outline-1 -outline-offset-1 focus-within:outline-2 focus-within:-outline-offset-2 ${
-                      formik.touched.subdomain && formik.errors.subdomain
+                      formik.touched.company_name && formik.errors.company_name
                         ? "outline-red-500 focus-within:outline-red-500"
                         : "outline-gray-300 focus-within:outline-amber-600"
                     }`}
                   >
                     <input
-                      id="subdomain"
-                      name="subdomain"
+                      id="company_name"
+                      name="company_name"
                       type="text"
-                      placeholder="your-company"
+                      placeholder="Enter company name"
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
-                      value={formik.values.subdomain}
+                      value={formik.values.company_name}
                       className="block min-w-0 grow py-1.5 pr-3 pl-3 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6"
                     />
                     <span className="flex items-center pr-3 text-gray-500 sm:text-sm">
                       .localhost
                     </span>
                   </div>
-                  {formik.touched.subdomain && formik.errors.subdomain && (
-                    <p className="mt-1 text-sm text-red-500">
-                      {formik.errors.subdomain}
-                    </p>
-                  )}
+                  {formik.touched.company_name &&
+                    formik.errors.company_name && (
+                      <p className="mt-1 text-sm text-red-500">
+                        {formik.errors.company_name}
+                      </p>
+                    )}
                 </div>
               ) : (
-                <Listbox value={selected} onChange={setSelected}>
+                <Listbox
+                  value={selected}
+                  onChange={setSelected}
+                  disabled={isLoadingCompanies || companies.length === 0}
+                >
                   <div className="relative">
-                    <ListboxButton className="grid w-full cursor-default grid-cols-1 rounded-md bg-white py-1.5 pr-2 pl-3 text-left text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-amber-600 sm:text-sm/6">
+                    <ListboxButton className="grid w-full cursor-default grid-cols-1 rounded-md bg-white py-1.5 pr-2 pl-3 text-left text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-amber-600 sm:text-sm/6 disabled:opacity-50 disabled:cursor-not-allowed">
                       <span className="col-start-1 row-start-1 flex items-center pr-6">
-                        <span className="block truncate">{selected.name}</span>
+                        <span className="block truncate">
+                          {isLoadingCompanies
+                            ? "Loading companies..."
+                            : selected?.name || "Select a company"}
+                        </span>
                       </span>
                       <ChevronUpDownIcon
                         aria-hidden="true"
@@ -249,7 +290,7 @@ export default function Register() {
                       transition
                       className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg outline-1 outline-black/5 data-leave:transition data-leave:duration-100 data-leave:ease-in data-closed:data-leave:opacity-0 sm:text-sm"
                     >
-                      {companies.map((company) => (
+                      {companies.map((company: Company) => (
                         <ListboxOption
                           key={company.id}
                           value={company}

@@ -1,5 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { loginApi, saveToken, removeToken, registerApi, getUserApi } from "../api/auth";
+import { loginApi, saveToken, removeToken, registerApi, getUserApi, loadCompaniesApi } from "../api/auth";
+
+export function useLoadCompanies() {
+  return useQuery({
+    queryKey: ["companies"],
+    queryFn: loadCompaniesApi,
+  });
+}
 
 export function useLogin() {
   const qc = useQueryClient();

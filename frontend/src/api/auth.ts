@@ -1,7 +1,21 @@
 import api from "./axios";
+import type { LoginPayload, RegisterPayload } from "../types/global";
 
-export type LoginPayload = { email: string; password: string; subdomain?: string };
-export type RegisterPayload = { name: string; email: string; password: string; subdomain?: string };
+
+// export async function checkSubdomainApi(subdomain: string) {
+//   const res = await api.get(`/check-subdomain/${subdomain}`);
+//   return res.data;
+// }
+
+// export async function createSubdomainApi(subdomain: string) {
+//   const res = await api.post("/create-subdomain", { subdomain });
+//   return res.data;
+// }
+
+export async function loadCompaniesApi() {
+  const res = await api.get("/companies");
+  return res.data;
+}
 
 export async function loginApi(data: LoginPayload) {
   const res = await api.post("/login", data);
