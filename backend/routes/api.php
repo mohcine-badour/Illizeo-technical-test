@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Models\User;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\UserController;
 
 // public Routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -18,4 +19,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user',      [AuthController::class, 'me']);
     Route::post('/logout',   [AuthController::class, 'logout']);
     Route::apiResource('notes', NoteController::class);
+    Route::get('/users',     [UserController::class, 'index']);
 });

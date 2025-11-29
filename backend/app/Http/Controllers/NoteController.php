@@ -16,20 +16,6 @@ class NoteController extends Controller
     }
     
     /**
-     * Get all notes (all users).
-     */
-    // public function getAllNotes(Request $request)
-    // {
-    //     // Get all notes with pagination
-    //     $notes = Note::latest()->paginate(10);
-
-    //     return response()->json([
-    //         'data'  => $notes->items(), 
-    //         'total' => $notes->total(), 
-    //     ]);
-    // }
-
-    /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
