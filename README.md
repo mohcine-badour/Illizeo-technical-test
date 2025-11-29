@@ -1,8 +1,3 @@
-﻿# Illizeo-technical-test
-Here is the **English version**, short and ready to copy-paste:
-
----
-
 # Illizeo Technical Test – Fullstack Notes Management App
 
 This project is a full-stack application developed as part of the Illizeo technical test.
@@ -19,7 +14,4 @@ For installation, configuration, and technical details, refer to:
 * `/backend/README.md`
 * `/frontend/README.md`
 
----
-
-If you want a shorter version, a more descriptive one, or a professional polished version, just ask!
 
